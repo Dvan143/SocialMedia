@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main page</title>
+</head>
+<body>
+<header>
+        <div class="Logo">
+            <h1>MindBreak</h1>
+        </div>
+</header>
+<div class="registration-cssave">
+    <form action="auth" method="post">
+        <h3 class="text-center">Enter to MindBreak</h3>
+        <input class="item" type="text" name="userName" id="userName" placeholder="Login" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" required> <br>
+        <input class="item" type="password" name="password" id="password" placeholder="Password" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" required> <br>
+        <a th:href="resetPassword">Forgot password</a> <br> <br>
+        <a th:href="register">Registration</a> <br> <br>
+        <button>Enter</button>
+    </form>
+    <div th:text="${error}"></div>
+</a>-->
+
+</div>
+<script type="text/javascript" th:src="@{js/first.js}"></script>
+<link rel="stylesheet" th:href="@{css/styles.css}">
+</body>
+</html>

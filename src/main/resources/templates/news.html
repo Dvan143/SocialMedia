@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News feed</title>
+</head>
+<body>
+<div>Latest news:</div>
+<table>
+    <tr th:each="i : ${lastNews}">
+        <td th:text="${i}"></td>
+    </tr>
+</table>
+<div>All news:</div>
+<table>
+    <tr th:each="j : ${allNews}">
+        <td th:text="${j}"></td>
+    </tr>
+</table>
+<form action="addNews" method="post">
+    <input type="text" name="title" placeholder="Title">
+    <input type="text" name="content" placeholder="Content">
+    <input type="text" name="author" placeholder="Author">
+    <button>Create news</button>
+</form>
+</body>
+</html>
