@@ -13,11 +13,12 @@
         </div>
 </header>
 <div class="registration-cssave">
-    <form method="post" action="registerUser">
+    <form method="post" action="/register">
         <h3 class="text-center">Registration</h3>
+        <input class="item" type="text" name="username" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="userName" placeholder="Login" required> <br>
         <input class="item" type="email" name="email" minlength="4" maxlength="64" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" id="email" placeholder="Email" required> <br>
-        <input class="item" type="text" name="userName" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="userName" placeholder="Login" required> <br>
-        <input class="item" type="password" name="password" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="password" placeholder="Password" required>
+        <input class="item" type="password" name="password" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="password" placeholder="Password" required> <br>
+        <input class="item" type="password" name="confirmPassword" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="confirmPassword" placeholder="confirmPassword" required>
         <div th:text="${info}"></div>
         <div class="form-group">
             <br>
@@ -26,7 +27,6 @@
     </form>
 </div>
 <link rel="stylesheet" type="text/css" th:href="@{css/styles.css}">
-<script th:src="@{first.js}"></script>
 <footer>
     <div>MindBreak is a noncommercial impressive social media for you. There you can found friend and do interesting things. It's not about other social media. It's <h1 class="Logo">MindBreak</h1></div> <br>
     <a th:href="about.html" class="Top_menu">About us</a>
