@@ -30,13 +30,13 @@ public class Dao {
     @Transactional(readOnly = true)
     public boolean isUsernameExist(String username){
         Long count =  entityManager.createQuery("SELECT count(u) FROM UserClass u WHERE u.username = :username",Long.class).setParameter("username",username).getSingleResult();
-        return !count.equals(0);
+        return count>0;
     }
 
     @Transactional(readOnly = true)
     public boolean isEmailExist(String email){
         Long count = entityManager.createQuery("SELECT count(u) FROM UserClass u WHERE u.email = :email",Long.class).setParameter("email",email).getSingleResult();
-        return !count.equals(0);
+        return count>0;
     }
 
     @Transactional(readOnly = true)

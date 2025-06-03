@@ -46,22 +46,31 @@ public class ApiController {
 
             return null;
         } catch (AuthenticationException e) {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login or password is incorrect");
         } catch (IOException e) {
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Redirect error");
         }
 
     }
     @PostMapping("/register")
-    public ResponseEntity register(@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) {
-        if (!password.equals(confirmPassword)) return new ResponseEntity("Passwords are not same", HttpStatus.CONFLICT);
-//        if (dao.isUsernameExist(username)) return new ResponseEntity("User with this username already exist", HttpStatus.CONFLICT);
-//        if (dao.isEmailExist(email)) return new ResponseEntity("User with this email already exist", HttpStatus.CONFLICT);
+    public ResponseEntity register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) {
+        if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
+        if (dao.isUsernameExist(username)) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this username already exist");
+        if (dao.isEmailExist(email)) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this email already exist");
 
         UserClass user = new UserClass(username, email, encoder.encode(password), "user");
         dao.saveUser(user);
 
-        return new ResponseEntity("User created",HttpStatus.CREATED);
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        try{
+            response.sendRedirect("/");
+        } catch (IOException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Redirect error");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
     @PostMapping("/getUsers")
     public List<UserClass> getUsers(){
