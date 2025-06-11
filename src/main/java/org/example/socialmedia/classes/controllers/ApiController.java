@@ -35,7 +35,7 @@ public class ApiController {
     PasswordEncoder encoder;
 
     @PostMapping("/login")
-    public ResponseEntity login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) {
+    public ResponseEntity login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
         try{
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
             SecurityContextHolder.getContext().setAuthentication(auth);
@@ -47,14 +47,12 @@ public class ApiController {
             return null;
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login or password is incorrect");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Redirect error");
         }
 
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) {
+    public ResponseEntity register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
         if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
 
         // Solving n+1 problem
@@ -80,11 +78,7 @@ public class ApiController {
         Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
         response.addCookie(cookie);
 
-        try{
-            response.sendRedirect("/main");
-        } catch (IOException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Redirect error");
-        }
+        response.sendRedirect("/main");
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }

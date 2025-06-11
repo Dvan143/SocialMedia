@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/login","/register","/css/styles.css").permitAll()
+                        .requestMatchers("/actuator/**").hasRole("admin")
                         .anyRequest().authenticated())
                 .build();
     }

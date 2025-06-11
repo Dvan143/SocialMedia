@@ -8,22 +8,29 @@
     <title>Main page</title>
 </head>
 <body>
-<header>
-        <div class="Logo">
-            <h1>MindBreak</h1>
-        </div>
-</header>
-<div class="registration-cssave">
+<div class="header">
+    <span class="Logo">
+        <a th:href="@{/}">MindBreak</a>
+    </span>
+
+    <span class="urls">
+        <a th:href="@{/login}">Sign in</a>
+        <a th:href="@{/register}">Sign up</a>
+        <a th:href="@{/resetPassword}">Reset password</a>
+    </span>
+</div>
+<div class="form-login">
     <form action="/login" method="post">
-        <h3 class="text-center">Enter to MindBreak</h3>
-        <input class="item" type="text" name="username" id="username" placeholder="Login" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" required> <br>
-        <input class="item" type="password" name="password" id="password" placeholder="Password" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" required> <br>
-        <a th:href="resetPassword">Forgot password</a> <br> <br>
-        <a th:href="register">Registration</a> <br> <br>
-        <input type="submit" value="Send">
+        <input class="item" type="text" name="username" id="username" placeholder="Username" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" required> <br> <br>
+        <input class="item" type="password" name="password" id="password" placeholder="Password" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" required> <br> <br>
+        <div class="button">
+            <input class="button" type="submit" value="Sign in">
+        </div>
+        <a th:href="@{/resetPassword}">Forgot password</a> <br> <br>
+        <a th:href="@{/register}">Registration</a> <br> <br>
     </form>
+
     <div th:text="${error}"></div>
-</a>
 
 </div>
 <link rel="stylesheet" th:href="@{css/styles.css}">

@@ -12,6 +12,7 @@ import java.util.Date;
 public class JwtService {
     @Value("${secretKey}")
     public String secret;
+
     public String generateToken(String username){
         return Jwts.builder().signWith(getKey()).subject(username).issuedAt(new Date()).expiration(new Date(System.currentTimeMillis()+1000*60*60*24*7)).compact();
     }
