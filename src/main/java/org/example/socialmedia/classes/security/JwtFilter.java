@@ -34,7 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         for(Cookie cookie: cookies){
-            if(cookie.getName().equals("JWT")) token = cookie.getValue();
+            if(cookie.getName().equals("Token")) token = cookie.getValue();
         }
 
 
@@ -51,6 +51,7 @@ public class JwtFilter extends OncePerRequestFilter {
             UserDetails user = customUserDetailsService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
         filterChain.doFilter(request,response);

@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,9 +40,9 @@ public class ApiController {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            Cookie cookie = new Cookie("JWT", jwtService.generateToken(username));
+            Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
             response.addCookie(cookie);
-            response.sendRedirect("/");
+            response.sendRedirect("/main");
 
             return null;
         } catch (AuthenticationException e) {
@@ -52,11 +52,24 @@ public class ApiController {
         }
 
     }
+
     @PostMapping("/register")
     public ResponseEntity register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) {
         if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
-        if (dao.isUsernameExist(username)) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this username already exist");
-        if (dao.isEmailExist(email)) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with this email already exist");
+
+        // Solving n+1 problem
+        String usernameAndEmailIsExist = dao.isUsernameOrEmailExist(username, email);
+        switch (usernameAndEmailIsExist) {
+            case "Username&Email" -> {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Username And Email Are Exist");
+            }
+            case "Username" -> {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Username Is Exist");
+            }
+            case "Email" -> {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Is Exist");
+            }
+        }
 
         UserClass user = new UserClass(username, email, encoder.encode(password), "user");
         dao.saveUser(user);
@@ -64,17 +77,21 @@ public class ApiController {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
+        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
+        response.addCookie(cookie);
+
         try{
-            response.sendRedirect("/");
+            response.sendRedirect("/main");
         } catch (IOException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Redirect error");
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
-    @PostMapping("/getUsers")
-    public List<UserClass> getUsers(){
-        return dao.getUsers();
+
+    @GetMapping("/getUsers")
+    public List<UserClass> getUsers(@RequestParam(name = "page") int page){
+        return dao.getUsersByPage(page);
     }
 
     // Init users
