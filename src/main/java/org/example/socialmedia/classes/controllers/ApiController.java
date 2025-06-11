@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 public class ApiController {
@@ -41,9 +40,9 @@ public class ApiController {
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            Cookie cookie = new Cookie("JWT", jwtService.generateToken(username));
+            Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
             response.addCookie(cookie);
-            response.sendRedirect("/");
+            response.sendRedirect("/main");
 
             return null;
         } catch (AuthenticationException e) {
@@ -53,6 +52,7 @@ public class ApiController {
         }
 
     }
+
     @PostMapping("/register")
     public ResponseEntity register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) {
         if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
@@ -77,17 +77,18 @@ public class ApiController {
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        Cookie cookie = new Cookie("JWT", jwtService.generateToken(username));
+        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
         response.addCookie(cookie);
 
         try{
-            response.sendRedirect("/");
+            response.sendRedirect("/main");
         } catch (IOException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Redirect error");
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
+
     @GetMapping("/getUsers")
     public List<UserClass> getUsers(@RequestParam(name = "page") int page){
         return dao.getUsersByPage(page);

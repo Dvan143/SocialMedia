@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class Dao {
@@ -26,6 +25,7 @@ public class Dao {
         if(result.isEmpty()) throw new UsernameNotFoundException("User not found");
         return result.get(0);
     }
+
     @Transactional(readOnly = true)
     public String isUsernameOrEmailExist(String username, String email) {
         List<Object[]> result = entityManager.createQuery("SELECT u.username, u.email FROM UserClass u WHERE u.username = :username OR u.email = :email", Object[].class).setParameter("username", username).setParameter("email", email).getResultList();
@@ -50,7 +50,6 @@ public class Dao {
         if (emailExists) return "Email";
         return "None";
     }
-
 
     @Transactional(readOnly = true)
     public List<UserClass> getUsersByPage(int page){
