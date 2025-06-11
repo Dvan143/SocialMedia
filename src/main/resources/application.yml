@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: SocialMedia
+
+  datasource:
+    url: jdbc:h2:mem:users
+    driver-class-name: org.h2.Driver
+    username: h2
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+#secretKey: ${SECRET_KEY}
+secretKey: da;slxc,nzmvfjdstiwoa4238,dnmsgdfxcvccv[]'\\
