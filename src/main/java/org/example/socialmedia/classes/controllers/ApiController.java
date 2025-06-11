@@ -42,7 +42,7 @@ public class ApiController {
 
             Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
             response.addCookie(cookie);
-            response.sendRedirect("/main");
+            response.sendRedirect("/");
 
             return null;
         } catch (AuthenticationException e) {
@@ -78,7 +78,7 @@ public class ApiController {
         Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
         response.addCookie(cookie);
 
-        response.sendRedirect("/main");
+        response.sendRedirect("/");
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
@@ -91,7 +91,7 @@ public class ApiController {
     // Init users
     @PostConstruct
     public void init(){ // String username, String email, String password, String role
-        dao.saveUser(new UserClass("admin", "admin@admin.com", encoder.encode("admin"),"admin"));
+        dao.saveUser(new UserClass("admin", "admin@admin.com", encoder.encode("admin"), "admin"));
         dao.saveUser(new UserClass("bob","user@site.com", encoder.encode("1234"),"user"));
     }
 }

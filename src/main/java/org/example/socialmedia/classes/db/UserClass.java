@@ -27,6 +27,7 @@ public class UserClass {
 
     public UserClass(){
     }
+
     public UserClass(String username, String email, String password, String role){
         this.username=username;
         this.email=email;
