@@ -3,10 +3,10 @@ spring:
     name: SocialMedia
 
   datasource:
-    url: jdbc:h2:mem:socialMedia
+    url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
-    username: ${Db_username}
-    password: ${Db_password}
+    username: h2
+    password:
 
   spring:
     jpa:
@@ -18,9 +18,7 @@ logging:
   level:
     org:
       springframework:
-        security: DEBUG
+        #        security: DEBUG
+        security: INFO
 
-SecretKey: ${Secret_Key}
-server:
-  servlet:
-    context-path: /socialmedia
+SecretKey: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA

@@ -24,6 +24,7 @@
         <input class="item" type="email" name="email" minlength="4" maxlength="64" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" id="email" placeholder="Email" required> <br> <br>
         <input class="item" type="password" name="password" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="password" placeholder="Password" required> <br> <br>
         <input class="item" type="password" name="confirmPassword" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="confirmPassword" placeholder="confirmPassword" required> <br> <br>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
         <div class="button">
             <input class="button" type="submit" value="Register">
         </div>

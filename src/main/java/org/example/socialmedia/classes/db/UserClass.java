@@ -1,7 +1,6 @@
 package org.example.socialmedia.classes.db;
 
 import jakarta.persistence.*;
-
 import java.util.Set;
 
 @Entity
@@ -19,14 +18,18 @@ public class UserClass {
     @Column
     private String role;
 
-    @ManyToMany
-    @JoinTable(name = "user_friends",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "friend_id"))
-    private Set<UserClass> friends;
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
+    private Set<News> news;
+
+//    @ManyToMany(mappedBy = "friends")
+//    @JoinTable(name = "user_friends",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "friend_id"))
+//    private Set<UserClass> friends;
 
     public UserClass(){
     }
+
     public UserClass(String username, String email, String password, String role){
         this.username=username;
         this.email=email;
@@ -55,7 +58,7 @@ public class UserClass {
         return role;
     }
 
-    public Set<UserClass> getFriends() {
-        return friends;
+    public Set<News> getNews() {
+        return news;
     }
 }

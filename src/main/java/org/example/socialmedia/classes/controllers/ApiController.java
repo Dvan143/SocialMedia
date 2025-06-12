@@ -3,8 +3,7 @@ package org.example.socialmedia.classes.controllers;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.socialmedia.classes.db.Dao;
-import org.example.socialmedia.classes.db.UserClass;
+import org.example.socialmedia.classes.db.*;
 import org.example.socialmedia.classes.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -33,7 +30,7 @@ public class ApiController {
     Dao dao;
     @Autowired
     PasswordEncoder encoder;
-
+    // Users
     @PostMapping("/login")
     public ResponseEntity login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
         try{
@@ -41,8 +38,13 @@ public class ApiController {
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
+            cookie.setMaxAge(60*60*24*3);
+            cookie.setPath("/socialmedia");
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false);
+            
             response.addCookie(cookie);
-            response.sendRedirect("/main");
+            response.sendRedirect("/socialmedia");
 
             return null;
         } catch (AuthenticationException e) {
@@ -76,22 +78,41 @@ public class ApiController {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
+        cookie.setMaxAge(60*60*24*3);
+        cookie.setPath("/socialmedia");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
         response.addCookie(cookie);
 
-        response.sendRedirect("/main");
+        response.sendRedirect("/socialmedia");
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
 
     @GetMapping("/getUsers")
-    public List<UserClass> getUsers(@RequestParam(name = "page") int page){
+    public List<UserClassDto> getUsers(@RequestParam(name = "page") int page){
         return dao.getUsersByPage(page);
+    }
+
+    // News
+    @GetMapping("/getAllNews")
+    public List<NewsDto> getAllNews(){
+        return dao.getAllNews();
     }
 
     // Init users
     @PostConstruct
     public void init(){ // String username, String email, String password, String role
-        dao.saveUser(new UserClass("admin", "admin@admin.com", encoder.encode("admin"),"admin"));
-        dao.saveUser(new UserClass("bob","user@site.com", encoder.encode("1234"),"user"));
+        UserClass admin = new UserClass("admin", "admin@admin.com", encoder.encode("admin"), "admin");
+        UserClass user = new UserClass("bob","user@site.com", encoder.encode("1234"),"user");
+        dao.saveUser(admin);
+        dao.saveUser(user);
+
+        // String date, String title, String content, UserClass author
+        News news;
+        news = new News("20.3.2003", "Iraq is bombed", "Usa bombed Iraq today", admin);
+        dao.saveNews(news);
+        news = new News(LocalDate.now().toString(), "Gooooool", "Gooool in soccer!", user);
+        dao.saveNews(news);
     }
 }
