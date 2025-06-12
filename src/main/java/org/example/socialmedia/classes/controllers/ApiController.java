@@ -14,10 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -33,7 +30,6 @@ public class ApiController {
     Dao dao;
     @Autowired
     PasswordEncoder encoder;
-
     // Users
     @PostMapping("/login")
     public ResponseEntity login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
@@ -42,8 +38,13 @@ public class ApiController {
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
+            cookie.setMaxAge(60*60*24*3);
+            cookie.setPath("/socialmedia");
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false);
+            
             response.addCookie(cookie);
-            response.sendRedirect("/");
+            response.sendRedirect("/socialmedia");
 
             return null;
         } catch (AuthenticationException e) {
@@ -77,9 +78,13 @@ public class ApiController {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
+        cookie.setMaxAge(60*60*24*3);
+        cookie.setPath("/socialmedia");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
         response.addCookie(cookie);
 
-        response.sendRedirect("/");
+        response.sendRedirect("/socialmedia");
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }

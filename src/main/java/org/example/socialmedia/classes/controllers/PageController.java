@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
-import java.util.List;
 
 @Controller
 public class PageController {
@@ -49,9 +48,9 @@ public class PageController {
         return auth!=null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
     }
     private void ifUnauthorizedRedirect(HttpServletResponse response) throws IOException {
-        if(!isAuthenticated()) response.sendRedirect("/login");
+        if(!isAuthenticated()) response.sendRedirect("/socialmedia/login");
     }
     private void ifAuthorizedRedirect(HttpServletResponse response) throws IOException {
-        if(isAuthenticated()) response.sendRedirect("/");
+        if(isAuthenticated()) response.sendRedirect("/socialmedia");
     }
 }

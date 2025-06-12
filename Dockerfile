@@ -1,5 +1,4 @@
-FROM openjdk
-WORKDIR /app
-COPY target/SocialMedia-0.0.1-SNAPSHOT.jar /app/app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+FROM tomcat:11.0.8-jdk21-temurin-noble
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY target/SocialMedia-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/socialmedia.war
 EXPOSE 8080
