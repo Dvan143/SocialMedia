@@ -25,8 +25,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/zov","/login", "/register", "/", "/css/**").permitAll()
-                        .requestMatchers("/adminpanel").hasRole("ADMIN")
+                        .requestMatchers("/", "/login", "/register", "/news", "/css/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(except -> except.accessDeniedPage("/error/403"))

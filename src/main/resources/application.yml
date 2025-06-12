@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:socialMedia
-    driver-class-name: org.h2.Driver
+    url: ${Jdbc_url}
+    driver-class-name: ${Driver_class}
     username: ${Db_username}
     password: ${Db_password}
 
