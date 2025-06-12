@@ -3,8 +3,7 @@ package org.example.socialmedia.classes.controllers;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.socialmedia.classes.db.Dao;
-import org.example.socialmedia.classes.db.UserClass;
+import org.example.socialmedia.classes.db.*;
 import org.example.socialmedia.classes.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -34,6 +34,7 @@ public class ApiController {
     @Autowired
     PasswordEncoder encoder;
 
+    // Users
     @PostMapping("/login")
     public ResponseEntity login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
         try{
@@ -84,14 +85,29 @@ public class ApiController {
     }
 
     @GetMapping("/getUsers")
-    public List<UserClass> getUsers(@RequestParam(name = "page") int page){
+    public List<UserClassDto> getUsers(@RequestParam(name = "page") int page){
         return dao.getUsersByPage(page);
+    }
+
+    // News
+    @GetMapping("/getAllNews")
+    public List<NewsDto> getAllNews(){
+        return dao.getAllNews();
     }
 
     // Init users
     @PostConstruct
     public void init(){ // String username, String email, String password, String role
-        dao.saveUser(new UserClass("admin", "admin@admin.com", encoder.encode("admin"), "admin"));
-        dao.saveUser(new UserClass("bob","user@site.com", encoder.encode("1234"),"user"));
+        UserClass admin = new UserClass("admin", "admin@admin.com", encoder.encode("admin"), "admin");
+        UserClass user = new UserClass("bob","user@site.com", encoder.encode("1234"),"user");
+        dao.saveUser(admin);
+        dao.saveUser(user);
+
+        // String date, String title, String content, UserClass author
+        News news;
+        news = new News("20.3.2003", "Iraq is bombed", "Usa bombed Iraq today", admin);
+        dao.saveNews(news);
+        news = new News(LocalDate.now().toString(), "Gooooool", "Gooool in soccer!", user);
+        dao.saveNews(news);
     }
 }

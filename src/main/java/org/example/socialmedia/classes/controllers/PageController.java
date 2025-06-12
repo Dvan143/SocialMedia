@@ -1,7 +1,8 @@
 package org.example.socialmedia.classes.controllers;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.server.ServletServerHttpResponse;
+import org.example.socialmedia.classes.db.Dao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,9 +11,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 public class PageController {
+    @Autowired
+    Dao dao;
 
     @GetMapping("/")
     public String index(HttpServletResponse response, Model model) throws IOException {
@@ -32,6 +36,12 @@ public class PageController {
     public String register(HttpServletResponse response) throws IOException {
         ifAuthorizedRedirect(response);
         return "register";
+    }
+
+    @GetMapping("/news")
+    public String news(HttpServletResponse response) throws IOException {
+        ifAuthorizedRedirect(response);
+        return "news";
     }
 
     private boolean isAuthenticated(){
