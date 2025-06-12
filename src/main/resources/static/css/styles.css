@@ -25,7 +25,7 @@ a:hover{
     color:#fef3dc;
 }
 
-.Logo a{
+.logo a{
     color: chocolate;
     transition: color 0.5s ease;
     text-decoration: none;
@@ -34,7 +34,7 @@ a:hover{
 a{
     text-decoration: none;
 }
-.Logo a:hover{
+.logo a:hover{
     color: #975b18;
 }
 .form-login, .form-register{
@@ -57,4 +57,8 @@ a{
     padding: 8px 16px;
     text-decoration: none;
     cursor: pointer;
+}
+.error-info{
+    display: flex;
+    justify-content: center;
 }

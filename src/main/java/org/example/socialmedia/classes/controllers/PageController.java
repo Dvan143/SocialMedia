@@ -9,7 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import java.io.IOException;
 
 @Controller
@@ -41,6 +40,20 @@ public class PageController {
     public String news(HttpServletResponse response) throws IOException {
         ifAuthorizedRedirect(response);
         return "news";
+    }
+    @GetMapping("/adminpanel")
+    public String adminPanel(HttpServletResponse response) throws IOException {
+        ifUnauthorizedRedirect(response);
+        return "adminPage";
+    }
+    @GetMapping("/error/403")
+    public String Unauthorized(){
+        return "error/403";
+    }
+    // Todo
+    @GetMapping("/error/404")
+    public String NotFound(){
+        return "error/404";
     }
 
     private boolean isAuthenticated(){

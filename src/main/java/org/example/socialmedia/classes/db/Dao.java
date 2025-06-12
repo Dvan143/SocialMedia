@@ -54,7 +54,7 @@ public class Dao {
 
     @Transactional(readOnly = true)
     public List<UserClassDto> getUsersByPage(int page){
-        return entityManager.createQuery("SELECT u.username, u.email, n.title FROM UserClass u JOIN u.news n", UserClassDto.class).setFirstResult((page-1) * 10).setMaxResults(10).getResultList();
+        return entityManager.createQuery("SELECT u.username, u.email, n.title, u.role FROM UserClass u JOIN u.news n", UserClassDto.class).setFirstResult((page-1) * 10).setMaxResults(10).getResultList();
     }
 
 

@@ -25,11 +25,11 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/login", "/", "/css/**").permitAll()
-//                        .requestMatchers("/socialmedia/","/socialmedia/login","/socialmedia/register","/css/**").permitAll()
-//                        .requestMatchers("/actuator/**").hasRole("admin")
-                                .anyRequest().authenticated()
+                        .requestMatchers("/zov","/login", "/register", "/", "/css/**").permitAll()
+                        .requestMatchers("/adminpanel").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
+                .exceptionHandling(except -> except.accessDeniedPage("/error/403"))
                 .build();
     }
     @Bean

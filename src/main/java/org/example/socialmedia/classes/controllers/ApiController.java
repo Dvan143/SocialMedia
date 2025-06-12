@@ -22,30 +22,29 @@ import java.util.List;
 
 @RestController
 public class ApiController {
-    @Autowired
     AuthenticationManager authenticationManager;
-    @Autowired
     JwtService jwtService;
-    @Autowired
     Dao dao;
+    PasswordEncoder passwordEncoder;
     @Autowired
-    PasswordEncoder encoder;
-    // Users
+    public ApiController(AuthenticationManager authenticationManager, JwtService jwtService, Dao dao, PasswordEncoder passwordEncoder){
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.dao = dao;
+        this.passwordEncoder = passwordEncoder;
+    }
+    
+    // Users table logic
     @PostMapping("/login")
-    public ResponseEntity login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
+    public ResponseEntity<String> login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
         try{
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-            Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
-            cookie.setMaxAge(60*60*24*3);
-            cookie.setPath("/socialmedia");
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false);
-            
-            response.addCookie(cookie);
+            // Save cookie and set auth to securitycontext
+            DoAuthentication(response, username, password);
             response.sendRedirect("/socialmedia");
-
+            
             return null;
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login or password is incorrect");
@@ -54,7 +53,7 @@ public class ApiController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
+    public ResponseEntity<String> register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
         if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
 
         // Solving n+1 problem
@@ -71,19 +70,11 @@ public class ApiController {
             }
         }
 
-        UserClass user = new UserClass(username, email, encoder.encode(password), "user");
+        UserClass user = new UserClass(username, email, passwordEncoder.encode(password), "ROLE_USER");
         dao.saveUser(user);
 
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
-        cookie.setMaxAge(60*60*24*3);
-        cookie.setPath("/socialmedia");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        response.addCookie(cookie);
-
+        // Save cookie and set auth to securitycontext
+        DoAuthentication(response, username, password);
         response.sendRedirect("/socialmedia");
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
@@ -94,17 +85,17 @@ public class ApiController {
         return dao.getUsersByPage(page);
     }
 
-    // News
+    // News table logic
     @GetMapping("/getAllNews")
     public List<NewsDto> getAllNews(){
         return dao.getAllNews();
     }
 
-    // Init users
+    // Init users and news
     @PostConstruct
     public void init(){ // String username, String email, String password, String role
-        UserClass admin = new UserClass("admin", "admin@admin.com", encoder.encode("admin"), "admin");
-        UserClass user = new UserClass("bob","user@site.com", encoder.encode("1234"),"user");
+        UserClass admin = new UserClass("admin", "admin@admin.com", passwordEncoder.encode("admin"), "ROLE_ADMIN");
+        UserClass user = new UserClass("bobr","user@site.com", passwordEncoder.encode("1234"),"ROLE_USER");
         dao.saveUser(admin);
         dao.saveUser(user);
 
@@ -114,5 +105,19 @@ public class ApiController {
         dao.saveNews(news);
         news = new News(LocalDate.now().toString(), "Gooooool", "Gooool in soccer!", user);
         dao.saveNews(news);
+    }
+
+    // Generate and set cookie and send authentication to securitycontext
+    private void DoAuthentication(HttpServletResponse response, String username, String password) {
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
+        cookie.setMaxAge(60*60*24*3);
+        cookie.setPath("/socialmedia");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+
+        response.addCookie(cookie);
     }
 }
