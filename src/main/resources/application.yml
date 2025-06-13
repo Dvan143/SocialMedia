@@ -1,15 +1,14 @@
 spring:
   datasource:
-    url: ${Jdbc_url}
-    driver-class-name: ${Driver_class}
-    username: ${Db_username}
-    password: ${Db_password}
+    url: ${SPRING_DATASOURCE_URL}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
-  spring:
-    jpa:
-      hibernate:
-        ddl-auto: update
-      show-sql: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 logging:
   level:
@@ -17,7 +16,7 @@ logging:
       springframework:
         security: DEBUG
 
-SecretKey: ${Secret_Key}
+SecretKey: ${SECRET_KEY}
 server:
   servlet:
     context-path: /socialmedia

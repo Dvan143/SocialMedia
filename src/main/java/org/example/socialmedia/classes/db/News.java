@@ -10,12 +10,12 @@ public class News {
     private Long id;
     @Column
     private String date;
-    @Column
+    @Column(unique = true)
     private String title;
     @Column
     private String content;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "author_id")
     private UserClass author;
 

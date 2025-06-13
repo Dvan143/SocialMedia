@@ -13,11 +13,14 @@ public class Dao {
     @Autowired
     EntityManager entityManager;
 
-
     // User
     @Transactional
     public void saveUser(UserClass userClass){
-        entityManager.persist(userClass);
+        // Check is user exist
+        if(entityManager.createQuery("SELECT u FROM UserClass u WHERE u.username= :username OR u.email= :email").setParameter("username",userClass.getUsername()).setParameter("email",userClass.getEmail()).getResultList().isEmpty()) {
+            entityManager.persist(userClass);
+            entityManager.flush();
+        }
     }
 
     @Transactional(readOnly = true)
@@ -54,33 +57,46 @@ public class Dao {
 
     @Transactional(readOnly = true)
     public List<UserClassDto> getUsersByPage(int page){
-        return entityManager.createQuery("SELECT u.username, u.email, n.title, u.role FROM UserClass u JOIN u.news n", UserClassDto.class).setFirstResult((page-1) * 10).setMaxResults(10).getResultList();
+        return entityManager.createQuery("SELECT u.username, u.email, n.title, u.role FROM UserClass u LEFT JOIN u.news n", UserClassDto.class).setFirstResult((page-1) * 10).setMaxResults(10).getResultList();
     }
 
+    @Transactional(readOnly = true)
+    public List<UserClassDto> getUsers(){
+        return entityManager.createQuery("SELECT u.username, u.email, n.title, u.role FROM UserClass u LEFT JOIN u.news n", UserClassDto.class).getResultList();
+    }
 
     // News
     @Transactional
     public void saveNews(News news){
-        entityManager.persist(news);
+        // Check is news exist
+        if(entityManager.createQuery("SELECT n FROM News n WHERE n.content =:content").setParameter("content",news.getContent()).getResultList().isEmpty()) {
+            entityManager.persist(news);
+            entityManager.flush();
+        }
     }
+
+//    @Transactional(readOnly = true)
+//    public List<News> getNewsByUsername(String username){
+//        return entityManager.createQuery("SELECT n FROM News n JOIN n.author a WHERE a.username = :username", News.class).setParameter("username",username).getResultList();
+//    }
+
     @Transactional(readOnly = true)
-    public List<News> getNewsByUsername(String username){
-        return entityManager.createQuery("SELECT n FROM News n JOIN n.author a WHERE a.username = :username", News.class).setParameter("username",username).getResultList();
-    }
-    @Transactional(readOnly = true)
-    public List<NewsDto> getAllNews(){
+    public List<NewsDto> getNews(){
         return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n", NewsDto.class).getResultList();
     }
+
     @Transactional(readOnly = true)
-    public List<NewsDto> getNews(int page){
+    public List<NewsDto> getNewsByPage(int page){
         return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n ORDER BY date DESC",NewsDto.class).setFirstResult((page-1) * 10).getResultList();
     }
-    @Transactional(readOnly = true)
-    public String getAuthorUsernameOfNews(News news){
-        return entityManager.createQuery("SELECT a.username FROM News n JOIN n.author a WHERE n= :news", String.class).setParameter("news",news).getSingleResult();
-    }
+
     @Transactional
     public void newNews(News news){
         entityManager.persist(news);
+    }
+
+    @Transactional
+    public List<NewsDto> getUserNews(String username) {
+        return entityManager.createQuery("SELECT n.date,n.title,n.content,n.author.username FROM News n WHERE n.author.username = :username", NewsDto.class).setParameter("username",username).getResultList();
     }
 }

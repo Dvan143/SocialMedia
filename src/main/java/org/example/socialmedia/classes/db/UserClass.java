@@ -1,25 +1,26 @@
 package org.example.socialmedia.classes.db;
 
 import jakarta.persistence.*;
+
+import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
 public class UserClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column
+    @Column(unique = true)
     private String username;
-    @Column
+    @Column(unique = true)
     private String email;
     @Column
     private String password;
     @Column
     private String role;
 
-    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<News> news;
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private List<News> news;
 
 //    @ManyToMany(mappedBy = "friends")
 //    @JoinTable(name = "user_friends",
@@ -58,7 +59,7 @@ public class UserClass {
         return role;
     }
 
-    public Set<News> getNews() {
+    public List<News> getNews() {
         return news;
     }
 }

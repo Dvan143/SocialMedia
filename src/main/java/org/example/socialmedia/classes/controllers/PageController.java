@@ -41,13 +41,13 @@ public class PageController {
     @GetMapping("/news")
     public String news(HttpServletResponse response, Model model) throws IOException {
         ifUnauthorizedRedirect(response);
-        model.addAttribute("news",dao.getNews(1));
+        model.addAttribute("news",dao.getNews());
         return "news";
     }
     @GetMapping("/newsbypage")
     public String newsByPage(@RequestParam(name = "page") int page, HttpServletResponse response, Model model) throws IOException {
         ifUnauthorizedRedirect(response);
-        model.addAttribute("news",dao.getNews(page));
+        model.addAttribute("news",dao.getNewsByPage(page));
         return "news";
     }
 

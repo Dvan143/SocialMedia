@@ -22,6 +22,7 @@ import java.util.List;
 
 @RestController
 public class ApiController {
+
     AuthenticationManager authenticationManager;
     JwtService jwtService;
     Dao dao;
@@ -56,7 +57,76 @@ public class ApiController {
     public ResponseEntity<String> register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
         if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
 
-        // Solving n+1 problem
+        checkUsernameAndEmail(username,email);
+
+        UserClass user = new UserClass(username, email, passwordEncoder.encode(password), "ROLE_USER");
+        dao.saveUser(user);
+
+        // Save cookie and set auth to securitycontext
+        DoAuthentication(response, username, password);
+        response.sendRedirect("/socialmedia");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created");
+    }
+
+    @GetMapping("/getusers")
+    public List<UserClassDto> getUsers(){
+        return dao.getUsers();
+    }
+
+    @GetMapping("/getmynews")
+    public List<NewsDto> getMyNews(){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.getUserNews(myUsername);
+    }
+
+    @GetMapping("/getusersbypage")
+    public List<UserClassDto> getUsersByPage(@RequestParam(name = "page") int page){
+        return dao.getUsersByPage(page);
+    }
+
+    // News table logic
+    @GetMapping("/getallnews")
+    public List<NewsDto> getAllNews(){
+        return dao.getNews();
+    }
+
+    // Init users and news
+    @PostConstruct
+    public void init(){ // String username, String email, String password, String role
+        UserClass user1 = new UserClass("admin", "admin@admin.com", passwordEncoder.encode("admin"), "ROLE_ADMIN");
+        UserClass user2 = new UserClass("bobr","user@site.com", passwordEncoder.encode("1234"),"ROLE_USER");
+        dao.saveUser(user1);
+        dao.saveUser(user2);
+
+        // String date, String title, String content, UserClass author
+        News news;
+        news = new News("20.3.2003", "Iraq is bombed", "Usa bombed Iraq today", user1);
+        dao.saveNews(news);
+        news = new News("29.3.2020", "Syria is bombed", "Syria is bombed today", user1);
+        dao.saveNews(news);
+        news = new News(LocalDate.now().toString(), "Gooooool", "Gooool in soccer!", user2);
+        dao.saveNews(news);
+    }
+
+    // Generate and set cookie and send authentication to securitycontext
+    private void DoAuthentication(HttpServletResponse response, String username, String password) {
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
+        final int COOKIE_MAX_AGE = 60 * 60 * 24 * 3; // Three days
+
+        cookie.setMaxAge(COOKIE_MAX_AGE);
+        cookie.setPath("/socialmedia");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+
+        response.addCookie(cookie);
+    }
+
+    // Solving n+1 problem
+    private ResponseEntity<String> checkUsernameAndEmail(String username, String email){
         String usernameAndEmailIsExist = dao.isUsernameOrEmailExist(username, email);
         switch (usernameAndEmailIsExist) {
             case "Username&Email" -> {
@@ -69,55 +139,7 @@ public class ApiController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Is Exist");
             }
         }
-
-        UserClass user = new UserClass(username, email, passwordEncoder.encode(password), "ROLE_USER");
-        dao.saveUser(user);
-
-        // Save cookie and set auth to securitycontext
-        DoAuthentication(response, username, password);
-        response.sendRedirect("/socialmedia");
-
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created");
+        return null;
     }
 
-    @GetMapping("/getUsers")
-    public List<UserClassDto> getUsers(@RequestParam(name = "page") int page){
-        return dao.getUsersByPage(page);
-    }
-
-    // News table logic
-    @GetMapping("/getAllNews")
-    public List<NewsDto> getAllNews(){
-        return dao.getAllNews();
-    }
-
-    // Init users and news
-    @PostConstruct
-    public void init(){ // String username, String email, String password, String role
-        UserClass admin = new UserClass("admin", "admin@admin.com", passwordEncoder.encode("admin"), "ROLE_ADMIN");
-        UserClass user = new UserClass("bobr","user@site.com", passwordEncoder.encode("1234"),"ROLE_USER");
-        dao.saveUser(admin);
-        dao.saveUser(user);
-
-        // String date, String title, String content, UserClass author
-        News news;
-        news = new News("20.3.2003", "Iraq is bombed", "Usa bombed Iraq today", admin);
-        dao.saveNews(news);
-        news = new News(LocalDate.now().toString(), "Gooooool", "Gooool in soccer!", user);
-        dao.saveNews(news);
-    }
-
-    // Generate and set cookie and send authentication to securitycontext
-    private void DoAuthentication(HttpServletResponse response, String username, String password) {
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
-        cookie.setMaxAge(60*60*24*3);
-        cookie.setPath("/socialmedia");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-
-        response.addCookie(cookie);
-    }
 }
