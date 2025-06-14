@@ -13,7 +13,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     Dao dao;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-            UserClass user = null;
+            UserClass user;
             user = dao.getUserByUsername(username);
             return User.builder().username(user.getUsername()).password(user.getPassword()).authorities(user.getRole()).build();
     }

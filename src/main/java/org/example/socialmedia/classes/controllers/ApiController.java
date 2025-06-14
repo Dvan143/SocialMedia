@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.socialmedia.classes.db.*;
 import org.example.socialmedia.classes.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,8 @@ import java.util.List;
 
 @RestController
 public class ApiController {
+    @Value("${TokenMaxAge}")
+    int COOKIE_MAX_AGE; // in days
 
     AuthenticationManager authenticationManager;
     JwtService jwtService;
@@ -57,12 +60,15 @@ public class ApiController {
     public ResponseEntity<String> register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
         if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
 
-        checkUsernameAndEmail(username,email);
+        // Is credentials exist check
+        if(dao.isUserExist(username)) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with that username is exist");
+        if(dao.isEmailExist(email)) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with that email is exist");
 
+        // Saving user to db
         UserClass user = new UserClass(username, email, passwordEncoder.encode(password), "ROLE_USER");
         dao.saveUser(user);
 
-        // Save cookie and set auth to securitycontext
+        // Save cookie and set auth to security context
         DoAuthentication(response, username, password);
         response.sendRedirect("/socialmedia");
 
@@ -109,15 +115,16 @@ public class ApiController {
         dao.saveNews(news);
     }
 
-    // Generate and set cookie and send authentication to securitycontext
+    // Generate and set cookie and send authentication to security context
     private void DoAuthentication(HttpServletResponse response, String username, String password) {
+        // Trying to authenticate with got username n password
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
+        // Creating and sending access cookie to user
         Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
-        final int COOKIE_MAX_AGE = 60 * 60 * 24 * 3; // Three days
 
-        cookie.setMaxAge(COOKIE_MAX_AGE);
+        cookie.setMaxAge(COOKIE_MAX_AGE * 60 * 60 * 24);
         cookie.setPath("/socialmedia");
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
@@ -125,21 +132,5 @@ public class ApiController {
         response.addCookie(cookie);
     }
 
-    // Solving n+1 problem
-    private ResponseEntity<String> checkUsernameAndEmail(String username, String email){
-        String usernameAndEmailIsExist = dao.isUsernameOrEmailExist(username, email);
-        switch (usernameAndEmailIsExist) {
-            case "Username&Email" -> {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Username And Email Are Exist");
-            }
-            case "Username" -> {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Username Is Exist");
-            }
-            case "Email" -> {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Is Exist");
-            }
-        }
-        return null;
-    }
 
 }

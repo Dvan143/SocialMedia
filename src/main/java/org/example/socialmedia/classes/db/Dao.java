@@ -31,31 +31,6 @@ public class Dao {
     }
 
     @Transactional(readOnly = true)
-    public String isUsernameOrEmailExist(String username, String email) {
-        List<Object[]> result = entityManager.createQuery("SELECT u.username, u.email FROM UserClass u WHERE u.username = :username OR u.email = :email", Object[].class).setParameter("username", username).setParameter("email", email).getResultList();
-
-        boolean usernameExists = false;
-        boolean emailExists = false;
-
-        for (Object[] row : result) {
-            String dbUsername = (String) row[0];
-            String dbEmail = (String) row[1];
-
-            if (username.equals(dbUsername)) {
-                usernameExists = true;
-            }
-            if (email.equals(dbEmail)) {
-                emailExists = true;
-            }
-        }
-
-        if (usernameExists && emailExists) return "Username&Email";
-        if (usernameExists) return "Username";
-        if (emailExists) return "Email";
-        return "None";
-    }
-
-    @Transactional(readOnly = true)
     public List<UserClassDto> getUsersByPage(int page){
         return entityManager.createQuery("SELECT u.username, u.email, n.title, u.role FROM UserClass u LEFT JOIN u.news n", UserClassDto.class).setFirstResult((page-1) * 10).setMaxResults(10).getResultList();
     }
@@ -63,6 +38,15 @@ public class Dao {
     @Transactional(readOnly = true)
     public List<UserClassDto> getUsers(){
         return entityManager.createQuery("SELECT u.username, u.email, n.title, u.role FROM UserClass u LEFT JOIN u.news n", UserClassDto.class).getResultList();
+    }
+
+    @Transactional
+    public boolean isUserExist(String username){
+        return !(entityManager.createQuery("SELECT 1 FROM UserClass u WHERE u.username= :username").setParameter("username",username).getResultList().isEmpty());
+    }
+
+    public boolean isEmailExist(String email){
+        return !(entityManager.createQuery("SELECT 1 FROM UserClass u WHERE u.email= :email").setParameter("email",email).getResultList().isEmpty());
     }
 
     // News

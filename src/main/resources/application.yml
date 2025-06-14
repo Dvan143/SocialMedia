@@ -16,7 +16,8 @@ logging:
       springframework:
         security: DEBUG
 
-SecretKey: ${SECRET_KEY}
 server:
   servlet:
     context-path: /socialmedia
+SecretKey: ${SECRET_KEY}
+TokenMaxAge: 3 # In days

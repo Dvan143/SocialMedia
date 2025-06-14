@@ -3,7 +3,6 @@ package org.example.socialmedia.classes.db;
 import jakarta.persistence.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 public class UserClass {

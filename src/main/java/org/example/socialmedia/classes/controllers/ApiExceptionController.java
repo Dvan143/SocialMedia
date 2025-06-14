@@ -32,8 +32,8 @@ public class ApiExceptionController {
     public ResponseEntity<String> IoException(){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
     }
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> AnyOtherException(){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<String> AnyOtherException(){
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
+//    }
 }
