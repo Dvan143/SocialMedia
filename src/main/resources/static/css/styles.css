@@ -62,3 +62,11 @@ a{
     display: flex;
     justify-content: center;
 }
+ul{
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #d58010;
+}
+ul h3{
+    background-color: white;
+}

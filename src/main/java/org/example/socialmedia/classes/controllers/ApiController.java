@@ -79,6 +79,8 @@ public class ApiController {
         dao.saveNews(news);
         news = new News(getCurrentDateTime(), "Gooooool", "Gooool in soccer!", user2);
         dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Epidemic of COVID-19", "Epidemic of Covid had been started", user2);
+        dao.saveNews(news);
     }
 
     // Generate and set cookie and send authentication to security context
