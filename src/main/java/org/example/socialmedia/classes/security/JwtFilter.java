@@ -38,10 +38,11 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
 
-        if(token==null){
+        if(token==null || token.equals("")){
             filterChain.doFilter(request,response);
             return;
         }
+
         username = jwtService.extractUsername(token);
         if(!jwtService.verifyToken(token,username)){
             filterChain.doFilter(request,response);

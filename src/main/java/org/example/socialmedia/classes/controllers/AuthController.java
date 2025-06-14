@@ -74,6 +74,24 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletResponse response) throws IOException {
+        // Creating empty cookie
+        Cookie emptyCookie = new Cookie("Token",null);
+        // Sending empty cookie
+        response.addCookie(emptyCookie);
+        emptyCookie.setHttpOnly(true);
+        emptyCookie.setSecure(false);
+        emptyCookie.setPath("/");
+        emptyCookie.setMaxAge(0);
+        // Sending empty security authentication
+        SecurityContextHolder.clearContext();
+        // Redirecting to login page
+        response.sendRedirect("/socialmedia/login");
+
+        return ResponseEntity.ok().build();
+    }
+
     private void DoAuthentication(HttpServletResponse response, String username, String password) {
         // Trying to authenticate with got username n password
         Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
