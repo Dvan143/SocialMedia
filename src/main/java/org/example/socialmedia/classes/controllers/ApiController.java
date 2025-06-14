@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -107,11 +108,11 @@ public class ApiController {
 
         // String date, String title, String content, UserClass author
         News news;
-        news = new News("20.3.2003", "Iraq is bombed", "Usa bombed Iraq today", user1);
+        news = new News("02.11.1992", "Iraq is bombed", "Usa bombed Iraq today", user1);
         dao.saveNews(news);
-        news = new News("29.3.2020", "Syria is bombed", "Syria is bombed today", user1);
+        news = new News("12.11.2006", "Syria is bombed", "Syria is bombed today", user1);
         dao.saveNews(news);
-        news = new News(LocalDate.now().toString(), "Gooooool", "Gooool in soccer!", user2);
+        news = new News(getCurrentDate(), "Gooooool", "Gooool in soccer!", user2);
         dao.saveNews(news);
     }
 
@@ -131,6 +132,9 @@ public class ApiController {
 
         response.addCookie(cookie);
     }
-
+    public String getCurrentDate(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return LocalDate.now().format(formatter);
+    }
 
 }

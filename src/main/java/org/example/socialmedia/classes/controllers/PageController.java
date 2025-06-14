@@ -38,12 +38,13 @@ public class PageController {
         return "register";
     }
 
-    @GetMapping("/news")
+    @GetMapping("/main")
     public String news(HttpServletResponse response, Model model) throws IOException {
         ifUnauthorizedRedirect(response);
         model.addAttribute("news",dao.getNews());
         return "news";
     }
+
     @GetMapping("/newsbypage")
     public String newsByPage(@RequestParam(name = "page") int page, HttpServletResponse response, Model model) throws IOException {
         ifUnauthorizedRedirect(response);

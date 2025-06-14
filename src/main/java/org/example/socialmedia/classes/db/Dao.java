@@ -66,7 +66,7 @@ public class Dao {
 
     @Transactional(readOnly = true)
     public List<NewsDto> getNews(){
-        return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n", NewsDto.class).getResultList();
+        return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n ORDER BY date DESC", NewsDto.class).getResultList();
     }
 
     @Transactional(readOnly = true)
@@ -75,12 +75,7 @@ public class Dao {
     }
 
     @Transactional
-    public void newNews(News news){
-        entityManager.persist(news);
-    }
-
-    @Transactional
     public List<NewsDto> getUserNews(String username) {
-        return entityManager.createQuery("SELECT n.date,n.title,n.content,n.author.username FROM News n WHERE n.author.username = :username", NewsDto.class).setParameter("username",username).getResultList();
+        return entityManager.createQuery("SELECT n.date,n.title,n.content,n.author.username FROM News n WHERE n.author.username = :username ORDER BY date DESC", NewsDto.class).setParameter("username",username).getResultList();
     }
 }
