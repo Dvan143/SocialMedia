@@ -32,7 +32,9 @@ public class Dao {
 
     @Transactional(readOnly = true)
     public List<UserClassDto> getUsersByPage(int page){
-        return entityManager.createQuery("SELECT u.username, u.email, n.title, u.role FROM UserClass u LEFT JOIN u.news n", UserClassDto.class).setFirstResult((page-1) * 10).setMaxResults(10).getResultList();
+        if (page < 1) page = 1;
+        int offset = (page - 1) * 10;
+        return entityManager.createQuery("SELECT u.username, u.email, n.title, u.role FROM UserClass u LEFT JOIN u.news n", UserClassDto.class).setFirstResult(offset).setMaxResults(10).getResultList();
     }
 
     @Transactional(readOnly = true)
@@ -66,12 +68,14 @@ public class Dao {
 
     @Transactional(readOnly = true)
     public List<NewsDto> getNews(){
-        return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n ORDER BY date DESC", NewsDto.class).getResultList();
+        return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n ORDER BY date DESC", NewsDto.class).setMaxResults(20).getResultList();
     }
 
     @Transactional(readOnly = true)
     public List<NewsDto> getNewsByPage(int page){
-        return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n ORDER BY date DESC",NewsDto.class).setFirstResult((page-1) * 10).getResultList();
+        if (page < 1) page = 1;
+        int offset = (page - 1) * 5;
+        return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n ORDER BY date DESC",NewsDto.class).setFirstResult(offset).setMaxResults(5).getResultList();
     }
 
     @Transactional

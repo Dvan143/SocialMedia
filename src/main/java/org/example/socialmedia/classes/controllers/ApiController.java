@@ -17,15 +17,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class ApiController {
-    @Value("${TokenMaxAge}")
-    int COOKIE_MAX_AGE; // in days
 
     AuthenticationManager authenticationManager;
     JwtService jwtService;
@@ -38,44 +36,11 @@ public class ApiController {
         this.dao = dao;
         this.passwordEncoder = passwordEncoder;
     }
-    
-    // Users table logic
-    @PostMapping("/login")
-    public ResponseEntity<String> login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
-        try{
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
-            SecurityContextHolder.getContext().setAuthentication(auth);
 
-            // Save cookie and set auth to securitycontext
-            DoAuthentication(response, username, password);
-            response.sendRedirect("/socialmedia");
-            
-            return null;
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login or password is incorrect");
-        }
-
+    @GetMapping("/getMyUsername")
+    public String getMyUsername(){
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
-
-    @PostMapping("/register")
-    public ResponseEntity<String> register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
-        if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
-
-        // Is credentials exist check
-        if(dao.isUserExist(username)) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with that username is exist");
-        if(dao.isEmailExist(email)) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with that email is exist");
-
-        // Saving user to db
-        UserClass user = new UserClass(username, email, passwordEncoder.encode(password), "ROLE_USER");
-        dao.saveUser(user);
-
-        // Save cookie and set auth to security context
-        DoAuthentication(response, username, password);
-        response.sendRedirect("/socialmedia");
-
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created");
-    }
-
     @GetMapping("/getusers")
     public List<UserClassDto> getUsers(){
         return dao.getUsers();
@@ -93,7 +58,7 @@ public class ApiController {
     }
 
     // News table logic
-    @GetMapping("/getallnews")
+    @GetMapping("/getAllNews")
     public List<NewsDto> getAllNews(){
         return dao.getNews();
     }
@@ -108,33 +73,19 @@ public class ApiController {
 
         // String date, String title, String content, UserClass author
         News news;
-        news = new News("02.11.1992", "Iraq is bombed", "Usa bombed Iraq today", user1);
+        news = new News("02.11.1992 11:32", "Iraq is bombed", "Usa bombed Iraq today", user1);
         dao.saveNews(news);
-        news = new News("12.11.2006", "Syria is bombed", "Syria is bombed today", user1);
+        news = new News("12.11.2006 03:22", "Syria is bombed", "Syria is bombed today", user1);
         dao.saveNews(news);
-        news = new News(getCurrentDate(), "Gooooool", "Gooool in soccer!", user2);
+        news = new News(getCurrentDateTime(), "Gooooool", "Gooool in soccer!", user2);
         dao.saveNews(news);
     }
 
     // Generate and set cookie and send authentication to security context
-    private void DoAuthentication(HttpServletResponse response, String username, String password) {
-        // Trying to authenticate with got username n password
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
-        SecurityContextHolder.getContext().setAuthentication(auth);
 
-        // Creating and sending access cookie to user
-        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
-
-        cookie.setMaxAge(COOKIE_MAX_AGE * 60 * 60 * 24);
-        cookie.setPath("/socialmedia");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-
-        response.addCookie(cookie);
-    }
-    public String getCurrentDate(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        return LocalDate.now().format(formatter);
+    public String getCurrentDateTime(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        return LocalDateTime.now().format(formatter);
     }
 
 }

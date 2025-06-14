@@ -20,15 +20,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .formLogin(login -> login.disable())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .deleteCookies("Token")
+                        .permitAll()
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .exceptionHandling(except -> except.accessDeniedPage("/error/403"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/news", "/css/**").permitAll()
+                        // Todo When the main page will be done
+                        // Configure /api access
+                        .requestMatchers("/", "/login", "/register", "/logout", "/news", "/api/**", "/css/**","/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(except -> except.accessDeniedPage("/error/403"))
                 .build();
     }
     @Bean

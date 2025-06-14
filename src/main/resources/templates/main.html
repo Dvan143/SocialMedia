@@ -4,11 +4,23 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<div class="header">
+    <span class="logo">
+        <a th:href="@{/}">SocialMedia</a>
+    </span>
+    <span class="urls">
+        <a th:href="@{/news}">News</a>
+        <a th:href="@{/profile}">My profile</a>
+        <a th:href="@{/logout}">Logout</a>
+    </span>
+</div>
+<script th:src="@{js/gettingNews.js}"></script>
+<script th:src="@{js/gettingUsername.js}"></script>
 <body>
-<div>Hello, <span th:text="${username}"></span></div>
+<div>Hello, <span id="username"></span></div>
 <div>Last news:</div>
-<ul>
+<div id="newsContainer"></div>
 
-</ul>
+<link rel="stylesheet" th:href="@{css/styles.css}">
 </body>
 </html>
