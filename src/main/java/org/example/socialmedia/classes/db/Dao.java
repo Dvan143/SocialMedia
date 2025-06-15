@@ -79,6 +79,11 @@ public class Dao {
     }
 
     @Transactional
+    public boolean isTitleNewsExist(String title){
+        return !(entityManager.createQuery("SELECT 1 FROM News n WHERE n.title= :title").setParameter("title",title).getResultList().isEmpty());
+    }
+
+    @Transactional
     public List<NewsDto> getUserNews(String username) {
         return entityManager.createQuery("SELECT n.date,n.title,n.content,n.author.username FROM News n WHERE n.author.username = :username ORDER BY date DESC", NewsDto.class).setParameter("username",username).getResultList();
     }

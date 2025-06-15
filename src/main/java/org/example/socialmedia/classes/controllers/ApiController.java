@@ -1,22 +1,18 @@
 package org.example.socialmedia.classes.controllers;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.socialmedia.classes.db.*;
 import org.example.socialmedia.classes.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -62,6 +58,21 @@ public class ApiController {
     public List<NewsDto> getAllNews(){
         return dao.getNews();
     }
+
+    @PostMapping("/newNews")
+    public ResponseEntity<String> newNews(HttpServletResponse response, @RequestParam(name = "title") String title, @RequestParam(name = "content") String content) throws IOException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserClass author = dao.getUserByUsername(username);
+        if(dao.isTitleNewsExist(title)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+
+        News news = new News(getCurrentDateTime(), title, content, author);
+        dao.saveNews(news);
+
+        response.sendRedirect("/socialmedia");
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
 
     // Init users and news
     @PostConstruct

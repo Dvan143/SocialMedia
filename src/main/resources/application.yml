@@ -13,9 +13,8 @@ spring:
 logging:
   level:
     org:
-      springframework:
-        security: DEBUG
-
+      springframework.security.web.csrf.CsrfFilter: DEBUG
+      springframework.security.web.csrf.CsrfAuthenticationStrategy: DEBUG
 server:
   servlet:
     context-path: /socialmedia

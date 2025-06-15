@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Creating news</title>
 </head>
+<body>
 <div class="header">
     <span class="logo">
         <a th:href="@{/}">SocialMedia</a>
@@ -14,19 +15,23 @@
         <a th:href="@{/profile}">My profile</a>
         <a href="/" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
 
-<!--        aren't diplayed-->
+        <!--        aren't diplayed-->
         <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none;"></form>
-<!--        -->
+        <!--        -->
 
     </span>
 </div>
-<script th:src="@{js/gettingNews.js}"></script>
-<script th:src="@{js/gettingUsername.js}"></script>
-<body>
-<div>Hello, <span id="username"></span></div>
-<div>Last news:</div>
-<div id="newsContainer"></div>
-
+<div id="newNews-form">
+<form th:action="@{/api/newNews}" method="post">
+    <div class="underText">Title</div>
+    <input type="text" class="item title" name="title" minlength="5" maxlength="50"> <br> <br>
+    <div class="underText">Content</div>
+    <textarea class="item content" name="content" minlength="10" maxlength="340"></textarea> <br> <br>
+    <div class="button">
+        <input class="button" type="submit" value="Create">
+    </div>
+</form>
+</div>
 <link rel="stylesheet" th:href="@{css/styles.css}">
 </body>
 </html>

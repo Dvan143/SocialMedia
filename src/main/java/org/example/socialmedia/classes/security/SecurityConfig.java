@@ -24,13 +24,16 @@ public class SecurityConfig {
                 .logout(logout -> logout.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers("/logout"))
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/logout","/api/newNews")
+                        )
                 .exceptionHandling(except -> except.accessDeniedPage("/error/403"))
                 .authorizeHttpRequests(auth -> auth
                         // Todo When the main page will be done
                         // Configure /api access
                         .requestMatchers("/", "/login", "/register", "/logout", "/news", "/api/**", "/css/**","/js/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .build();
     }

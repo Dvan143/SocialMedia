@@ -7,7 +7,9 @@ import org.example.socialmedia.classes.db.UserClass;
 import org.example.socialmedia.classes.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +26,7 @@ import java.io.IOException;
 @RestController
 public class AuthController {
     @Value("${TokenMaxAge}")
-    int COOKIE_MAX_AGE; // in days
+    long COOKIE_MAX_AGE; // in days
 
     Dao dao;
     JwtService jwtService;
@@ -77,7 +79,7 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) throws IOException {
         // Creating empty cookie
-        Cookie emptyCookie = new Cookie("Token",null);
+        Cookie emptyCookie = new Cookie("JWT",null);
         // Sending empty cookie
         response.addCookie(emptyCookie);
         emptyCookie.setHttpOnly(true);
@@ -98,14 +100,15 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         // Creating and sending access cookie to user
-        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
+        ResponseCookie cookie = ResponseCookie.from("JWT", jwtService.generateToken(username))
+                .httpOnly(true)
+                .secure(false)
+                .path("/socialmedia")
+                .maxAge(COOKIE_MAX_AGE * 60 * 60 * 24)
+                .sameSite("Lax")
+                .build();
 
-        cookie.setMaxAge(COOKIE_MAX_AGE * 60 * 60 * 24);
-        cookie.setPath("/socialmedia");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-
-        response.addCookie(cookie);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
 }
