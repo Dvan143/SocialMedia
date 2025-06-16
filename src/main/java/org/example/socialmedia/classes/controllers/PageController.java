@@ -46,6 +46,11 @@ public class PageController {
         return "news";
     }
 
+    @GetMapping("/news")
+    public String news(){
+        return "news";
+    }
+
     @GetMapping("/newsbypage")
     public String newsByPage(@RequestParam(name = "page") int page, HttpServletResponse response, Model model) throws IOException {
         ifUnauthorizedRedirect(response);

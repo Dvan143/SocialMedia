@@ -100,3 +100,8 @@ ul h3{
     box-sizing: border-box;
     max-lines: 10;
 }
+.doCenter{
+    display: flex;
+    justify-content: center;
+    text-decoration-style: solid;
+}

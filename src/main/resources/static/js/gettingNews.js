@@ -1,11 +1,24 @@
-fetch('/socialmedia/api/getAllNews')
+fetch('/socialmedia/api/getLastNews')
     .then(resp => resp.json())
-        .then(newsList => {
-            renderNews(newsList)
-        })
-            .catch(error => console.error(`Error of loading: `, error));
-function renderNews(newsList){
-    const newsContainer = document.getElementById('newsContainer')
+    .then(newsList => {
+        renderLastNews(newsList,'newsContainer')
+    })
+    .catch(error => console.error(`Error of loading: `, error));
+
+fetch('/socialmedia/api/getMyLastNews')
+    .then(resp => resp.json())
+    .then(newsList => {
+        renderLastNews(newsList,'myNewsContainer')
+    })
+    .catch(error => console.error(`Error of loading: `, error));
+
+function renderLastNews(newsList,containerName){
+    const newsContainer = document.getElementById(containerName)
+    if(newsList == null || newsList.length === 0){
+        newsContainer.innerText='None'
+        newsContainer.style.display='flex'
+        newsContainer.style.justifyContent='center'
+    }
     const list = document.createElement('ul')
     newsList.forEach(news => {
         const currentNews = document.createElement('li')

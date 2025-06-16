@@ -37,27 +37,17 @@ public class ApiController {
     public String getMyUsername(){
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
-    @GetMapping("/getusers")
-    public List<UserClassDto> getUsers(){
-        return dao.getUsers();
-    }
+//    @GetMapping("/getusers")
+//    public List<UserClassDto> getUsers(){
+//        return dao.getUsers();
+//    }
 
-    @GetMapping("/getmynews")
-    public List<NewsDto> getMyNews(){
-        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        return dao.getUserNews(myUsername);
-    }
-
-    @GetMapping("/getusersbypage")
+    @GetMapping("/getUsersByPage")
     public List<UserClassDto> getUsersByPage(@RequestParam(name = "page") int page){
         return dao.getUsersByPage(page);
     }
 
     // News table logic
-    @GetMapping("/getAllNews")
-    public List<NewsDto> getAllNews(){
-        return dao.getNews();
-    }
 
     @PostMapping("/newNews")
     public ResponseEntity<String> newNews(HttpServletResponse response, @RequestParam(name = "title") String title, @RequestParam(name = "content") String content) throws IOException {
@@ -72,7 +62,28 @@ public class ApiController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+    // TODO every
+    @GetMapping("/getAllNews")
+    public List<NewsDto> getAllNews(){
+        return dao.getNews();
+    }
 
+    @GetMapping("/getLastNews")
+    public List<NewsDto> getLastNews(){
+        return dao.getNewsByPage(1);
+    }
+
+    @GetMapping("/getMyNews")
+    public List<NewsDto> getMyNews(){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.getUserNews(myUsername);
+    }
+
+    @GetMapping("/getMyLastNews")
+    public List<NewsDto> getMyLastNews(){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.getUserNewsByPage(myUsername,1);
+    }
 
     // Init users and news
     @PostConstruct
