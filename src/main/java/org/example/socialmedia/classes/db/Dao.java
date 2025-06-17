@@ -42,17 +42,30 @@ public class Dao {
         return !(entityManager.createQuery("SELECT 1 FROM UserClass u WHERE u.username= :username").setParameter("username",username).getResultList().isEmpty());
     }
 
+    @Transactional
     public boolean isEmailExist(String email){
         return !(entityManager.createQuery("SELECT 1 FROM UserClass u WHERE u.email= :email").setParameter("email",email).getResultList().isEmpty());
+    }
+
+    @Transactional
+    public String getBirthday(String username){
+        return entityManager.createQuery("SELECT u.birthday FROM UserClass u WHERE u.username = :username", String.class).setParameter("username",username).getSingleResult();
+    }
+
+    @Transactional
+    public void setBirthday(String username, String date){
+        UserClass user = getUserByUsername(username);
+        user.setBirthday(date);
+        entityManager.merge(user);
     }
 
     // News
     @Transactional
     public void saveNews(News news){
         // Check is news exist
-        if(entityManager.createQuery("SELECT n FROM News n WHERE n.content =:content").setParameter("content",news.getContent()).getResultList().isEmpty()) {
+        if(entityManager.createQuery("SELECT n FROM News n WHERE n.title =:title").setParameter("title",news.getTitle()).getResultList().isEmpty()) {
             entityManager.persist(news);
-            entityManager.flush();
+//            entityManager.flush();
         }
     }
 
@@ -69,8 +82,8 @@ public class Dao {
     @Transactional(readOnly = true)
     public List<NewsDto> getNewsByPage(int page){
         if (page < 1) page = 1;
-        int offset = (page - 1) * 5;
-        return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n ORDER BY date DESC",NewsDto.class).setFirstResult(offset).setMaxResults(5).getResultList();
+        int offset = (page - 1) * 15;
+        return entityManager.createQuery("SELECT n.date,n.title,n.content, n.author.username FROM News n ORDER BY date DESC",NewsDto.class).setFirstResult(offset).setMaxResults(15).getResultList();
     }
 
     @Transactional
@@ -87,7 +100,13 @@ public class Dao {
     @Transactional
     public List<NewsDto> getUserNewsByPage(String username, int page) {
         if (page < 1) page = 1;
-        int offset = (page - 1) * 5;
-        return entityManager.createQuery("SELECT n.date,n.title,n.content,n.author.username FROM News n WHERE n.author.username = :username ORDER BY date DESC", NewsDto.class).setFirstResult(offset).setMaxResults(5).setParameter("username",username).getResultList();
+        int offset = (page - 1) * 15;
+        return entityManager.createQuery("SELECT n.date,n.title,n.content,n.author.username FROM News n WHERE n.author.username = :username ORDER BY date DESC", NewsDto.class).setFirstResult(offset).setMaxResults(15).setParameter("username",username).getResultList();
+    }
+
+    @Transactional
+    public Long getNewsPages(){
+        Long pages = entityManager.createQuery("SELECT count(n) FROM News n",Long.class).getSingleResult();
+        return pages/15;
     }
 }

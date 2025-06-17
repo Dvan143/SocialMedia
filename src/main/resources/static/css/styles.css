@@ -105,3 +105,10 @@ ul h3{
     justify-content: center;
     text-decoration-style: solid;
 }
+.blueUrl{
+    color: blue;
+    text-decoration: none;
+}
+.blueUrl:hover{
+    color: blueviolet;
+}

@@ -39,29 +39,16 @@ public class PageController {
         return "register";
     }
 
-    @GetMapping("/main")
-    public String news(HttpServletResponse response, Model model) throws IOException {
-        ifUnauthorizedRedirect(response);
-        model.addAttribute("news",dao.getNews());
-        return "news";
-    }
-
-    @GetMapping("/news")
-    public String news(){
-        return "news";
-    }
-
-    @GetMapping("/newsbypage")
-    public String newsByPage(@RequestParam(name = "page") int page, HttpServletResponse response, Model model) throws IOException {
-        ifUnauthorizedRedirect(response);
-        model.addAttribute("news",dao.getNewsByPage(page));
-        return "news";
-    }
-
     @GetMapping("/newNews")
     public String CreatingNews(HttpServletResponse response) throws IOException {
         ifUnauthorizedRedirect(response);
         return "newNews";
+    }
+
+    @GetMapping("/myProfile")
+    public String myProfile(HttpServletResponse response) throws IOException {
+        ifUnauthorizedRedirect(response);
+        return "profile";
     }
 
     @GetMapping("/error/403")

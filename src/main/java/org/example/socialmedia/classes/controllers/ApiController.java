@@ -62,7 +62,7 @@ public class ApiController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-    // TODO every
+
     @GetMapping("/getAllNews")
     public List<NewsDto> getAllNews(){
         return dao.getNews();
@@ -85,10 +85,32 @@ public class ApiController {
         return dao.getUserNewsByPage(myUsername,1);
     }
 
+    @GetMapping("/getNewsPages")
+    public Long getNewsCount(){
+        return dao.getNewsPages();
+    }
+
+    @GetMapping("/getNewsByPage")
+    public List<NewsDto> getNewsByPage(int page){
+        return dao.getNewsByPage(page);
+    }
+
+    @GetMapping("/getMyBirthday")
+    public String getMyBirthday(){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.getBirthday(myUsername);
+    }
+
+    @GetMapping("/setMyBirthday")
+    public void setMyBirthday(@RequestParam(name = "birthday") String birthday){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        dao.setBirthday(myUsername,birthday);
+    }
+
     // Init users and news
     @PostConstruct
-    public void init(){ // String username, String email, String password, String role
-        UserClass user1 = new UserClass("admin", "admin@admin.com", passwordEncoder.encode("admin"), "ROLE_ADMIN");
+    public void init(){ // String username, String email, String password, String role, String birthday
+        UserClass user1 = new UserClass("admin", "admin@admin.com", passwordEncoder.encode("admin"), "ROLE_ADMIN","1999-12-12");
         UserClass user2 = new UserClass("bobr","user@site.com", passwordEncoder.encode("1234"),"ROLE_USER");
         dao.saveUser(user1);
         dao.saveUser(user2);
@@ -102,6 +124,26 @@ public class ApiController {
         news = new News(getCurrentDateTime(), "Gooooool", "Gooool in soccer!", user2);
         dao.saveNews(news);
         news = new News(getCurrentDateTime(), "Epidemic of COVID-19", "Epidemic of Covid had been started", user2);
+        dao.saveNews(news);
+        news = new News("02.11.1992 11:32", "Iraq is bofdsfdsmbed", "Usa bombed Iraq today", user1);
+        dao.saveNews(news);
+        news = new News("12.11.2as006 03:22as", "Syria is bofsddsfdmbed", "Syria is bosambed today", user1);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Goooadsoool", "Gooool in soccer!", user2);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Epidasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
+        dao.saveNews(news);
+        dao.saveNews(news);
+        news = new News("12.11.2as006 03:22as", "Syria is bodasasdfsddsfdmbed", "Syria is bosambed today", user1);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Goooadasddassoool", "Gooool in soccer!", user2);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Epidasadkjhjhkssasdasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
+        dao.saveNews(news);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Goojkhoadajhksddassoool", "Gooool in soccer!", user2);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Epidasadssahhhhsdasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
         dao.saveNews(news);
     }
 

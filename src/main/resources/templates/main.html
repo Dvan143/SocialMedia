@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>SocialMedia</title>
 </head>
 <div class="header">
     <span class="logo">
         <a th:href="@{/}">SocialMedia</a>
     </span>
     <span class="urls">
-        <a th:href="@{/news}">News</a>
         <a th:href="@{/newNews}">Add news</a>
-        <a th:href="@{/profile}">My profile</a>
+        <a th:href="@{/myProfile}">My profile</a>
         <a href="/" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
 
 <!--        aren't diplayed-->
@@ -20,8 +19,9 @@
 
     </span>
 </div>
-<script th:src="@{js/gettingNews.js}"></script>
-<script th:src="@{js/gettingUsername.js}"></script>
+<script th:src="@{js/main/gettingNews.js}"></script>
+<script th:src="@{js/main/gettingUsername.js}"></script>
+<script th:src="@{js/apiFunctions.js}"></script>
 <body>
 <div>Hello, <span id="username"></span></div> <br>
 
