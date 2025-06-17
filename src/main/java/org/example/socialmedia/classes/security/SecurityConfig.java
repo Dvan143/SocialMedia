@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/logout","/api/newNews")
+                        .ignoringRequestMatchers("/logout","/api/newNews","/api/changeMyPassword")
                         )
                 .exceptionHandling(except -> except.accessDeniedPage("/error/403"))
                 .authorizeHttpRequests(auth -> auth

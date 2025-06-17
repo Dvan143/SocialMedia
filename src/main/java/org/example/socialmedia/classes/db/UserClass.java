@@ -79,4 +79,8 @@ public class UserClass {
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

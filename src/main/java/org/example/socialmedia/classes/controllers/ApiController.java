@@ -107,6 +107,19 @@ public class ApiController {
         dao.setBirthday(myUsername,birthday);
     }
 
+    @PostMapping("/changeMyPassword")
+    public ResponseEntity<String> changeMyPassword(@RequestParam(name = "oldPassword") String oldPassword, @RequestParam(name = "newPassword") String newPassword) {
+        newPassword = passwordEncoder.encode(newPassword);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userPassword = dao.getPassword(username);
+        if (!passwordEncoder.matches(oldPassword, userPassword)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } else {
+            dao.changePassword(username, newPassword);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+    }
+
     // Init users and news
     @PostConstruct
     public void init(){ // String username, String email, String password, String role, String birthday

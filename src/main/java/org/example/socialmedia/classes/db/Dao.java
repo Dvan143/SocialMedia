@@ -12,6 +12,7 @@ import java.util.List;
 public class Dao {
     @Autowired
     EntityManager entityManager;
+    // TODO remove
 
     // User
     @Transactional
@@ -57,6 +58,17 @@ public class Dao {
         UserClass user = getUserByUsername(username);
         user.setBirthday(date);
         entityManager.merge(user);
+    }
+
+    @Transactional
+    public String getPassword(String username){
+        return entityManager.createQuery("SELECT u.password FROM UserClass u WHERE u.username= :username", String.class).setParameter("username",username).getSingleResult();
+    }
+
+    @Transactional
+    public void changePassword(String username, String password){
+        UserClass user = getUserByUsername(username);
+        user.setPassword(password);
     }
 
     // News

@@ -51,6 +51,12 @@ public class PageController {
         return "profile";
     }
 
+    @GetMapping("/changePassword")
+    public String changePassword(HttpServletResponse response) throws IOException {
+        ifUnauthorizedRedirect(response);
+        return "changePassword";
+    }
+
     @GetMapping("/error/403")
     public String Unauthorized(){
         return "error/403";
