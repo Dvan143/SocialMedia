@@ -8,8 +8,8 @@
 </head>
 <body>
 <div class="header">
-    <span class="Logo">
-        <a th:href="@{/}">MindBreak</a>
+    <span class="logo">
+        <a th:href="@{/}">SocialMedia</a>
     </span>
 
     <span class="urls">
@@ -19,12 +19,12 @@
     </span>
 </div>
 <div class="form-register">
-    <form method="post" action="/register">
+    <form method="post" th:action="@{/register}">
         <input class="item" type="text" name="username" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="userName" placeholder="Login" required> <br> <br>
         <input class="item" type="email" name="email" minlength="4" maxlength="64" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" id="email" placeholder="Email" required> <br> <br>
         <input class="item" type="password" name="password" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="password" placeholder="Password" required> <br> <br>
         <input class="item" type="password" name="confirmPassword" minlength="4" maxlength="32" pattern="^[a-zA-Z0-9_.-]*$" id="confirmPassword" placeholder="confirmPassword" required> <br> <br>
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+<!--        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>-->
         <div class="button">
             <input class="button" type="submit" value="Register">
         </div>

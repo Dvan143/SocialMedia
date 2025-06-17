@@ -12,9 +12,11 @@ import java.util.Date;
 public class JwtService {
     @Value("${SecretKey}")
     public String secret;
+    @Value("${TokenMaxAge}")
+    long TOKEN_MAX_AGE; // in days
 
     public String generateToken(String username){
-        return Jwts.builder().signWith(getKey()).subject(username).issuedAt(new Date()).expiration(new Date(System.currentTimeMillis()+1000*60*60*24*7)).compact();
+        return Jwts.builder().signWith(getKey()).subject(username).issuedAt(new Date()).expiration(new Date(System.currentTimeMillis()+ TOKEN_MAX_AGE * 1000 * 60 * 60 * 24)).compact();
     }
     public String extractUsername(String token){
         return Jwts.parser().verifyWith(getKey()).build().parseSignedClaims(token).getPayload().getSubject();

@@ -1,11 +1,10 @@
 package org.example.socialmedia.classes.db;
 
-import java.util.List;
-
 public class UserClassDto {
     private String username;
     private String email;
     private String news;
+    private String role;
 
     public String getUsername() {
         return username;
@@ -19,9 +18,14 @@ public class UserClassDto {
         return news;
     }
 
-    public UserClassDto(String username, String email, String news) {
+    public String getRole() {
+        return role;
+    }
+
+    public UserClassDto(String username, String email, String news, String role) {
         this.username = username;
         this.email = email;
         this.news = news;
+        this.role = role;
     }
 }

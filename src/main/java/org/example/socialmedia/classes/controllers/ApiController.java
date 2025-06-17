@@ -1,7 +1,6 @@
 package org.example.socialmedia.classes.controllers;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.socialmedia.classes.db.*;
 import org.example.socialmedia.classes.security.JwtService;
@@ -9,110 +8,164 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class ApiController {
-    @Autowired
+
     AuthenticationManager authenticationManager;
-    @Autowired
     JwtService jwtService;
-    @Autowired
     Dao dao;
+    PasswordEncoder passwordEncoder;
     @Autowired
-    PasswordEncoder encoder;
-    // Users
-    @PostMapping("/login")
-    public ResponseEntity login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
-        try{
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
-            cookie.setMaxAge(60*60*24*3);
-            cookie.setPath("/socialmedia");
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false);
-            
-            response.addCookie(cookie);
-            response.sendRedirect("/socialmedia");
-
-            return null;
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login or password is incorrect");
-        }
-
+    public ApiController(AuthenticationManager authenticationManager, JwtService jwtService, Dao dao, PasswordEncoder passwordEncoder){
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
+        this.dao = dao;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
-        if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
-
-        // Solving n+1 problem
-        String usernameAndEmailIsExist = dao.isUsernameOrEmailExist(username, email);
-        switch (usernameAndEmailIsExist) {
-            case "Username&Email" -> {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Username And Email Are Exist");
-            }
-            case "Username" -> {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Username Is Exist");
-            }
-            case "Email" -> {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Email Is Exist");
-            }
-        }
-
-        UserClass user = new UserClass(username, email, encoder.encode(password), "user");
-        dao.saveUser(user);
-
-        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        Cookie cookie = new Cookie("Token", jwtService.generateToken(username));
-        cookie.setMaxAge(60*60*24*3);
-        cookie.setPath("/socialmedia");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        response.addCookie(cookie);
-
-        response.sendRedirect("/socialmedia");
-
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created");
+    @GetMapping("/getMyUsername")
+    public String getMyUsername(){
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
+//    @GetMapping("/getusers")
+//    public List<UserClassDto> getUsers(){
+//        return dao.getUsers();
+//    }
 
-    @GetMapping("/getUsers")
-    public List<UserClassDto> getUsers(@RequestParam(name = "page") int page){
+    @GetMapping("/getUsersByPage")
+    public List<UserClassDto> getUsersByPage(@RequestParam(name = "page") int page){
         return dao.getUsersByPage(page);
     }
 
-    // News
-    @GetMapping("/getAllNews")
-    public List<NewsDto> getAllNews(){
-        return dao.getAllNews();
+    // News table logic
+
+    @PostMapping("/newNews")
+    public ResponseEntity<String> newNews(HttpServletResponse response, @RequestParam(name = "title") String title, @RequestParam(name = "content") String content) throws IOException {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        UserClass author = dao.getUserByUsername(username);
+        if(dao.isTitleNewsExist(title)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
+
+        News news = new News(getCurrentDateTime(), title, content, author);
+        dao.saveNews(news);
+
+        response.sendRedirect("/socialmedia");
+
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // Init users
+    @GetMapping("/getAllNews")
+    public List<NewsDto> getAllNews(){
+        return dao.getNews();
+    }
+
+    @GetMapping("/getLastNews")
+    public List<NewsDto> getLastNews(){
+        return dao.getNewsByPage(1);
+    }
+
+    @GetMapping("/getMyNews")
+    public List<NewsDto> getMyNews(){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.getUserNews(myUsername);
+    }
+
+    @GetMapping("/getMyLastNews")
+    public List<NewsDto> getMyLastNews(){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.getUserNewsByPage(myUsername,1);
+    }
+
+    @GetMapping("/getNewsPages")
+    public Long getNewsCount(){
+        return dao.getNewsPages();
+    }
+
+    @GetMapping("/getNewsByPage")
+    public List<NewsDto> getNewsByPage(int page){
+        return dao.getNewsByPage(page);
+    }
+
+    @GetMapping("/getMyBirthday")
+    public String getMyBirthday(){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.getBirthday(myUsername);
+    }
+
+    @GetMapping("/setMyBirthday")
+    public void setMyBirthday(@RequestParam(name = "birthday") String birthday){
+        String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        dao.setBirthday(myUsername,birthday);
+    }
+
+    @PostMapping("/changeMyPassword")
+    public ResponseEntity<String> changeMyPassword(HttpServletResponse response, @RequestParam(name = "oldPassword") String oldPassword, @RequestParam(name = "newPassword") String newPassword) throws IOException {
+        newPassword = passwordEncoder.encode(newPassword);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        String userPassword = dao.getPassword(username);
+        if (!passwordEncoder.matches(oldPassword, userPassword)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } else {
+            dao.changePassword(username, newPassword);
+            response.sendRedirect("/socialmedia");
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+    }
+
+    // Init users and news
     @PostConstruct
-    public void init(){ // String username, String email, String password, String role
-        UserClass admin = new UserClass("admin", "admin@admin.com", encoder.encode("admin"), "admin");
-        UserClass user = new UserClass("bob","user@site.com", encoder.encode("1234"),"user");
-        dao.saveUser(admin);
-        dao.saveUser(user);
+    public void init(){ // String username, String email, String password, String role, String birthday
+        UserClass user1 = new UserClass("admin", "admin@admin.com", passwordEncoder.encode("admin"), "ROLE_ADMIN","1999-12-12");
+        UserClass user2 = new UserClass("bobr","user@site.com", passwordEncoder.encode("1234"),"ROLE_USER");
+        dao.saveUser(user1);
+        dao.saveUser(user2);
 
         // String date, String title, String content, UserClass author
         News news;
-        news = new News("20.3.2003", "Iraq is bombed", "Usa bombed Iraq today", admin);
+        news = new News("02.11.1992 11:32", "Iraq is bombed", "Usa bombed Iraq today", user1);
         dao.saveNews(news);
-        news = new News(LocalDate.now().toString(), "Gooooool", "Gooool in soccer!", user);
+        news = new News("12.11.2006 03:22", "Syria is bombed", "Syria is bombed today", user1);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Gooooool", "Gooool in soccer!", user2);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Epidemic of COVID-19", "Epidemic of Covid had been started", user2);
+        dao.saveNews(news);
+        news = new News("02.11.1992 11:32", "Iraq is bofdsfdsmbed", "Usa bombed Iraq today", user1);
+        dao.saveNews(news);
+        news = new News("12.11.2as006 03:22as", "Syria is bofsddsfdmbed", "Syria is bosambed today", user1);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Goooadsoool", "Gooool in soccer!", user2);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Epidasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
+        dao.saveNews(news);
+        dao.saveNews(news);
+        news = new News("12.11.2as006 03:22as", "Syria is bodasasdfsddsfdmbed", "Syria is bosambed today", user1);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Goooadasddassoool", "Gooool in soccer!", user2);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Epidasadkjhjhkssasdasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
+        dao.saveNews(news);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Goojkhoadajhksddassoool", "Gooool in soccer!", user2);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(), "Epidasadssahhhhsdasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
         dao.saveNews(news);
     }
+
+    // Generate and set cookie and send authentication to security context
+
+    public String getCurrentDateTime(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        return LocalDateTime.now().format(formatter);
+    }
+
 }

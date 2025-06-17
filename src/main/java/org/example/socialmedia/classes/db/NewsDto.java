@@ -1,10 +1,10 @@
 package org.example.socialmedia.classes.db;
 
 public class NewsDto {
-    private String date;
-    private String title;
-    private String content;
-    private String author;
+    public String date;
+    public String title;
+    public String content;
+    public String author;
 
     public String getDate() {
         return date;

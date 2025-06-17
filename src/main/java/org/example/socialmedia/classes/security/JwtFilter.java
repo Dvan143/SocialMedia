@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -34,19 +35,26 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         for(Cookie cookie: cookies){
-            if(cookie.getName().equals("Token")) token = cookie.getValue();
+            if(cookie.getName().equals("JWT")) token = cookie.getValue();
         }
 
 
-        if(token==null){
+        if(token==null || token.equals("")){
             filterChain.doFilter(request,response);
             return;
         }
-        username = jwtService.extractUsername(token);
-        if(!jwtService.verifyToken(token,username)){
+        
+        try{
+            username = jwtService.extractUsername(token);
+            if(!jwtService.verifyToken(token,username)){
+                filterChain.doFilter(request,response);
+                return;
+            }
+        } catch (UsernameNotFoundException ex) {
             filterChain.doFilter(request,response);
             return;
         }
+
         if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
             UserDetails user = customUserDetailsService.loadUserByUsername(username);
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

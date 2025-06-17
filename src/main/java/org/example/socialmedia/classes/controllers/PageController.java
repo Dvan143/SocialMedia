@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 
@@ -37,10 +39,33 @@ public class PageController {
         return "register";
     }
 
-    @GetMapping("/news")
-    public String news(HttpServletResponse response) throws IOException {
-        ifAuthorizedRedirect(response);
-        return "news";
+    @GetMapping("/newNews")
+    public String CreatingNews(HttpServletResponse response) throws IOException {
+        ifUnauthorizedRedirect(response);
+        return "newNews";
+    }
+
+    @GetMapping("/myProfile")
+    public String myProfile(HttpServletResponse response) throws IOException {
+        ifUnauthorizedRedirect(response);
+        return "profile";
+    }
+
+    @GetMapping("/changePassword")
+    public String changePassword(HttpServletResponse response) throws IOException {
+        ifUnauthorizedRedirect(response);
+        return "changePassword";
+    }
+
+    @GetMapping("/error/403")
+    public String Unauthorized(){
+        return "error/403";
+    }
+
+    // Todo
+    @GetMapping("/error/404")
+    public String NotFound(){
+        return "error/404";
     }
 
     private boolean isAuthenticated(){

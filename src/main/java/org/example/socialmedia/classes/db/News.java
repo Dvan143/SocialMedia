@@ -2,9 +2,6 @@ package org.example.socialmedia.classes.db;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Table
 public class News {
@@ -13,12 +10,12 @@ public class News {
     private Long id;
     @Column
     private String date;
-    @Column
+    @Column(unique = true)
     private String title;
     @Column
     private String content;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "author_id")
     private UserClass author;
 

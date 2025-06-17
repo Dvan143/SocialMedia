@@ -1,25 +1,27 @@
 package org.example.socialmedia.classes.db;
 
 import jakarta.persistence.*;
-import java.util.Set;
+
+import java.util.List;
 
 @Entity
-@Table(name = "users")
 public class UserClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column
+    @Column(unique = true)
     private String username;
-    @Column
+    @Column(unique = true)
     private String email;
     @Column
     private String password;
     @Column
     private String role;
+    @Column
+    private String birthday;
 
-    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<News> news;
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private List<News> news;
 
 //    @ManyToMany(mappedBy = "friends")
 //    @JoinTable(name = "user_friends",
@@ -35,6 +37,14 @@ public class UserClass {
         this.email=email;
         this.password=password;
         this.role=role;
+    }
+
+    public UserClass(String username, String email, String password, String role, String birthday){
+        this.username=username;
+        this.email=email;
+        this.password=password;
+        this.role=role;
+        this.birthday = birthday;
     }
 
     public UserClass(String username, String password) {
@@ -58,7 +68,19 @@ public class UserClass {
         return role;
     }
 
-    public Set<News> getNews() {
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public List<News> getNews() {
         return news;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

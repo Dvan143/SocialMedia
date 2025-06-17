@@ -4,30 +4,35 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>My profile</title>
 </head>
+<script th:src="@{/js/main/gettingUsername.js}"></script>
+<script th:src="@{/js/profile/gettingBirthday.js}"></script>
+<script th:src="@{/js/profile/changeBirthday.js}"></script>
 <body>
-<header>
-    <div class="page-header">
-        <div class="logo">
-            <p>MindBreak</p>
-        </div>
+<div class="header">
+    <span class="logo">
+        <a th:href="@{/}">SocialMedia</a>
+    </span>
+    <span class="urls">
+        <a th:href="@{/newNews}">Add news</a>
+        <a th:href="@{/myProfile}">My profile</a>
+        <a href="/" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
 
-        <div id="navigation-bar" class="nav-bar">
-            <a href="#">Profile</a>
-            <a href="#">News feed</a>
-            <a href="#">Friends</a>
-            <a th:href="@{/settings}">Settings</a>
-            <a href="#">Log out</a>
-        </div>
-    </div>
-</header>
-<div class="maintext">
-    <div>Hello, <span th:text="${userName}"></span></div>
-    <div>News feed:</div>
-    <div th:text="${news}"></div>
+        <!--        aren't diplayed-->
+        <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none;"></form>
+        <!--        -->
+
+    </span>
 </div>
-<script type="text/javascript" th:src="@{/js/first.js}"></script>
+<div id="profile-page" class="doCenter">
+    <div class="orange-element">Your username: <br><span id="username"></span></div>
+    <div class="orange-element">Birthday date: <br><span id="birthday"></span> </div>
+</div>
+<div class="orange-element doLeft">
+    <div class="orange-element">Change birthday date <br> <input type="date" id="newBirthdayDate" min="1900-01-01" max="2020-01-01"><a class="blueUrl" onclick="changeBirthday()">Change</a></div>
+    <a class="blueUrl orange-element" th:href="@{/changePassword}">Change password</a>
+</div>
 <link rel="stylesheet" th:href="@{/css/styles.css}">
 </body>
 </html>

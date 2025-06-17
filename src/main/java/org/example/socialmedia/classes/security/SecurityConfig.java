@@ -20,15 +20,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .formLogin(login -> login.disable())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/logout","/api/newNews","/api/changeMyPassword")
+                        )
+                .exceptionHandling(except -> except.accessDeniedPage("/error/403"))
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers("/login", "/", "/css/**").permitAll()
-//                        .requestMatchers("/socialmedia/","/socialmedia/login","/socialmedia/register","/css/**").permitAll()
-//                        .requestMatchers("/actuator/**").hasRole("admin")
-                                .anyRequest().authenticated()
+                        // Todo When the main page will be done
+                        // Configure /api access
+                        .requestMatchers("/", "/login", "/register", "/logout", "/news", "/api/**", "/css/**","/js/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .build();
     }
