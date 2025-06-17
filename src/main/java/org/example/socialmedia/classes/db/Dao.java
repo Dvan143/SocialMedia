@@ -12,7 +12,6 @@ import java.util.List;
 public class Dao {
     @Autowired
     EntityManager entityManager;
-    // TODO remove
 
     // User
     @Transactional

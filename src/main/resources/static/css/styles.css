@@ -37,7 +37,7 @@ a{
 .logo a:hover{
     color: #975b18;
 }
-.form-login, .form-register{
+.form-login, .form-register , #newNews-form{
     border-radius: 10px;
     background-color: #975b18;
     display: flex;
@@ -70,15 +70,15 @@ ul{
 ul h3{
     background-color: white;
 }
-#newNews-form{
-    border-radius: 10px;
-    background-color: #d58010;
-    display: flex;
-    justify-content: center;
-    margin-right: 30%;
-    margin-left: 30%;
-    margin-top: 8%;
-}
+/*#newNews-form{*/
+/*    border-radius: 10px;*/
+/*    background-color: #d58010;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    margin-right: 30%;*/
+/*    margin-left: 30%;*/
+/*    margin-top: 8%;*/
+/*}*/
 .underText{
      display: flex;
      justify-content: center;
@@ -111,4 +111,23 @@ ul h3{
 }
 .blueUrl:hover{
     color: blueviolet;
+}
+/*#profile-page{*/
+/*    border-radius: 10px;*/
+/*    background-color: #975b18;*/
+/*    display: flex;*/
+
+/*    margin-right: 30%;*/
+/*    margin-left: 30%;*/
+/*    margin-top: 8%;*/
+/*}*/
+.orange-element{
+    background-color: #d58010;
+    border: black;
+    border-radius: 5px;
+    margin: 10px;
+}
+.doLeft{
+    display: flex;
+    justify-content: left;
 }

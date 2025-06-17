@@ -25,12 +25,13 @@
 
     </span>
 </div>
-<div id="profile-info">
-    <div>Your username: <span id="username"></span></div>
-    <div>Birthday date: <span id="birthday"></span> </div>
-    <input type="date" id="newBirthdayDate" min="1900-01-01" max="2020-01-01"><a class="blueUrl" onclick="changeBirthday()">Change</a> <br>
-<!--    TODO changepassword page-->
-    <a class="blueUrl" th:href="@{/changePassword}">Change password</a>
+<div id="profile-page" class="doCenter">
+    <div class="orange-element">Your username: <br><span id="username"></span></div>
+    <div class="orange-element">Birthday date: <br><span id="birthday"></span> </div>
+</div>
+<div class="orange-element doLeft">
+    <div class="orange-element">Change birthday date <br> <input type="date" id="newBirthdayDate" min="1900-01-01" max="2020-01-01"><a class="blueUrl" onclick="changeBirthday()">Change</a></div>
+    <a class="blueUrl orange-element" th:href="@{/changePassword}">Change password</a>
 </div>
 <link rel="stylesheet" th:href="@{/css/styles.css}">
 </body>

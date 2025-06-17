@@ -108,7 +108,7 @@ public class ApiController {
     }
 
     @PostMapping("/changeMyPassword")
-    public ResponseEntity<String> changeMyPassword(@RequestParam(name = "oldPassword") String oldPassword, @RequestParam(name = "newPassword") String newPassword) {
+    public ResponseEntity<String> changeMyPassword(HttpServletResponse response, @RequestParam(name = "oldPassword") String oldPassword, @RequestParam(name = "newPassword") String newPassword) throws IOException {
         newPassword = passwordEncoder.encode(newPassword);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         String userPassword = dao.getPassword(username);
@@ -116,6 +116,7 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } else {
             dao.changePassword(username, newPassword);
+            response.sendRedirect("/socialmedia");
             return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
