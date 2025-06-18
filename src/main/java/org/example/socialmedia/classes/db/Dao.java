@@ -118,6 +118,7 @@ public class Dao {
     @Transactional
     public Long getNewsPages(){
         Long pages = entityManager.createQuery("SELECT count(n) FROM News n",Long.class).getSingleResult();
+        if (pages<15) return 1L;
         return pages/15;
     }
 }

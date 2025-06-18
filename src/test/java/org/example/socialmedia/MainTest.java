@@ -1,6 +1,8 @@
 package org.example.socialmedia;
 
 import org.example.socialmedia.classes.db.Dao;
+import org.example.socialmedia.classes.db.News;
+import org.example.socialmedia.classes.db.NewsDto;
 import org.example.socialmedia.classes.db.UserClass;
 import org.example.socialmedia.classes.security.JwtService;
 import org.junit.jupiter.api.Test;
@@ -10,11 +12,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
-public class IntegrationTest {
+public class MainTest {
     @Autowired
     Dao dao;
     @Autowired
@@ -33,6 +37,7 @@ public class IntegrationTest {
     @Test
     @Transactional
     void DaoUserTest(){
+        // User tests
         String username = "testUsername";
         String password = passwordEncoder.encode("testPassword");
         UserClass testUser = new UserClass(username, "testemail@test.com", password, "ROLE_USER","1991-12-12");
@@ -51,9 +56,16 @@ public class IntegrationTest {
         dao.setBirthday(username, newBirthday);
 
         assertEquals(newBirthday, dao.getBirthday(username), "Expected birthday doesn't match the actual value");
-    }
 
-    // TODO News Dao Test
+        // News tests
+        String testTitle = "TestTitle";
+        News testNews = new News("12.12.2000",testTitle,"TestContent", testUser);
+        dao.saveNews(testNews);
+
+        assertEquals(1,dao.getNewsPages());
+        assertTrue(dao.isTitleNewsExist(testTitle), "Title exist but expect false");
+        assertFalse(dao.isTitleNewsExist("NotExistTitle"),"Title was found but should not exist");
+    }
 
     @Test
     void JwtServiceTest(){
