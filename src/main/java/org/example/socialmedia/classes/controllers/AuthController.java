@@ -39,6 +39,7 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
     }
+
     // Users table logic
     @PostMapping("/login")
     public ResponseEntity<String> login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {

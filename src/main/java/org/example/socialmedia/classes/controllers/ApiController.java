@@ -135,29 +135,7 @@ public class ApiController {
         dao.saveNews(news);
         news = new News("12.11.2006 03:22", "Syria is bombed", "Syria is bombed today", user1);
         dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Gooooool", "Gooool in soccer!", user2);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Epidemic of COVID-19", "Epidemic of Covid had been started", user2);
-        dao.saveNews(news);
-        news = new News("02.11.1992 11:32", "Iraq is bofdsfdsmbed", "Usa bombed Iraq today", user1);
-        dao.saveNews(news);
-        news = new News("12.11.2as006 03:22as", "Syria is bofsddsfdmbed", "Syria is bosambed today", user1);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Goooadsoool", "Gooool in soccer!", user2);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Epidasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
-        dao.saveNews(news);
-        dao.saveNews(news);
-        news = new News("12.11.2as006 03:22as", "Syria is bodasasdfsddsfdmbed", "Syria is bosambed today", user1);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Goooadasddassoool", "Gooool in soccer!", user2);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Epidasadkjhjhkssasdasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
-        dao.saveNews(news);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Goojkhoadajhksddassoool", "Gooool in soccer!", user2);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Epidasadssahhhhsdasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
+        news = new News(getCurrentDateTime(), "Gooooooool", "Gooooool in soccer", user2);
         dao.saveNews(news);
     }
 

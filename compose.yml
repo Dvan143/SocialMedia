@@ -1,7 +1,7 @@
 services:
   socialMedia:
 #  projectssite:
-    image: dvan143/socialmedia
+    image: socialmedia
 #    image: dvan143/projectssite
 #    container_name: projectssite
     container_name: socialMediaApp
