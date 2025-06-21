@@ -1,18 +1,14 @@
 package org.example.socialmedia;
 
-import org.example.socialmedia.classes.db.Dao;
-import org.example.socialmedia.classes.db.News;
-import org.example.socialmedia.classes.db.NewsDto;
-import org.example.socialmedia.classes.db.UserClass;
+import org.example.socialmedia.classes.db.*;
 import org.example.socialmedia.classes.security.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,6 +21,8 @@ public class MainTest {
     PasswordEncoder passwordEncoder;
     @Autowired
     JwtService jwtService;
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
 
     @Test
     void smoke_contextLoads() {
@@ -57,6 +55,9 @@ public class MainTest {
 
         assertEquals(newBirthday, dao.getBirthday(username), "Expected birthday doesn't match the actual value");
 
+        String notExistUser = "@!#&Z$#(!&*";
+        assertThrows(UsernameNotFoundException.class, () -> dao.getUserByUsername(notExistUser));
+
         // News tests
         String testTitle = "TestTitle";
         News testNews = new News("12.12.2000",testTitle,"TestContent", testUser);
@@ -65,6 +66,12 @@ public class MainTest {
         assertEquals(1,dao.getNewsPages());
         assertTrue(dao.isTitleNewsExist(testTitle), "Title exist but expect false");
         assertFalse(dao.isTitleNewsExist("NotExistTitle"),"Title was found but should not exist");
+    }
+
+    @Test
+    void DetailsServiceTest(){
+        String notExistUsername = "#$(*@*($)#($E@!";
+        assertThrows(UsernameNotFoundException.class, () -> customUserDetailsService.loadUserByUsername(notExistUsername),"CustomUserDetailsService doesn't throws exception on not exist username");
     }
 
     @Test

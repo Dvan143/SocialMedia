@@ -4,6 +4,11 @@ spring:
     driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
   jpa:
     hibernate:
@@ -13,6 +18,7 @@ spring:
 logging:
   level:
     org:
+      example.socialmedia: INFO
       springframework.security.web.csrf.CsrfFilter: DEBUG
       springframework.security.web.csrf.CsrfAuthenticationStrategy: DEBUG
 server:

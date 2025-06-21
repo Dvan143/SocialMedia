@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,7 +53,12 @@ public class ApiController {
     @PostMapping("/newNews")
     public ResponseEntity<String> newNews(HttpServletResponse response, @RequestParam(name = "title") String title, @RequestParam(name = "content") String content) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserClass author = dao.getUserByUsername(username);
+        UserClass author;
+        try{
+            author = dao.getUserByUsername(username);
+        } catch (UsernameNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         if(dao.isTitleNewsExist(title)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
         News news = new News(getCurrentDateTime(), title, content, author);

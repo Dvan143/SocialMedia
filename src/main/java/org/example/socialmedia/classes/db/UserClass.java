@@ -14,6 +14,8 @@ public class UserClass {
     @Column(unique = true)
     private String email;
     @Column
+    private boolean isEmailVerified = false;
+    @Column
     private String password;
     @Column
     private String role;
@@ -60,6 +62,10 @@ public class UserClass {
         return email;
     }
 
+    public boolean emailVerified(){
+        return isEmailVerified;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -74,6 +80,11 @@ public class UserClass {
 
     public List<News> getNews() {
         return news;
+    }
+
+    // TODO
+    public void verifyEmail(){
+        isEmailVerified = true;
     }
 
     public void setBirthday(String birthday) {
