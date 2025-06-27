@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -101,10 +102,14 @@ public class ApiController {
         return dao.getNewsByPage(page);
     }
 
-    @GetMapping("/getMyBirthday")
-    public String getMyBirthday(){
+    @GetMapping("/getMyData")
+    public Map<String, String> getMyData(){
         String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        return dao.getBirthday(myUsername);
+        return Map.of(
+                "birthday", dao.getBirthday(myUsername),
+                "email", dao.getEmail(myUsername),
+                "isEmailVerified", String.valueOf(dao.isEmailVerified(myUsername))
+                );
     }
 
     @GetMapping("/setMyBirthday")
@@ -125,6 +130,24 @@ public class ApiController {
             response.sendRedirect("/socialmedia");
             return ResponseEntity.status(HttpStatus.OK).build();
         }
+    }
+
+    @GetMapping("/isEmailVerified")
+    public String isEmailVerified(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return String.valueOf(dao.isEmailVerified(username));
+    }
+
+    @GetMapping("/verifyMyEmail")
+    public void verifyMyEmail(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        dao.verifyEmail(username);
+    }
+
+    @GetMapping("/checkEmailCode")
+    public boolean checkEmailCode(String code){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.verifyEmailByCode(username,code);
     }
 
     // Init users and news

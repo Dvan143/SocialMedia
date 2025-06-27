@@ -11,11 +11,10 @@ public class MqService {
     @Autowired
     RabbitTemplate rabbitTemplate;
 
-    // TODO sender
-    public String acceptVerify(String to){
+    public String generateSecretCode(String to){
         Random random = new Random();
         // Generating secret code
-        String secretCode = String.valueOf(random.nextInt(10000,99999));
+        String secretCode = String.valueOf(random.nextInt(100000,999999));
         // String to, String secretCode
         MqDto data = new MqDto(to,secretCode);
 

@@ -1,16 +1,24 @@
 services:
-  socialMedia:
-#  projectssite:
-    image: socialmedia
+  socialmedia:
+    build:
+      context: .
+#    image: socialmedia
 #    image: dvan143/projectssite
-#    container_name: projectssite
     container_name: socialMediaApp
     ports:
       - "80:8080"
     depends_on:
+      - rabbitmq
       - db
     env_file:
       - .env
+  emailVerifier:
+    image: dvan143/emailverifier
+    container_name: emailVerifier
+    env_file:
+      - .env
+    depends_on:
+      - rabbitmq
   db:
     image: postgres:latest
     container_name: postgres_db
@@ -22,5 +30,17 @@ services:
       POSTGRES_PASSWORD: testPassword
     volumes:
       - postgres-data:/var/lib/postgresql/data
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: testUsername
+      RABBITMQ_DEFAULT_PASS: testPassword
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
 volumes:
   postgres-data:
+  rabbitmq-data:

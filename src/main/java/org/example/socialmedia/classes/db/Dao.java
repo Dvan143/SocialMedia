@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -19,7 +20,7 @@ public class Dao {
     ApiExceptionController apiExceptionController;
     //
     @Autowired
-    MqService mqProducer;
+    MqService mqService;
 
     // User
     @Loggable
@@ -28,7 +29,7 @@ public class Dao {
         // Check is user exist
         if(entityManager.createQuery("SELECT u FROM UserClass u WHERE u.username= :username OR u.email= :email").setParameter("username",userClass.getUsername()).setParameter("email",userClass.getEmail()).getResultList().isEmpty()) {
             entityManager.persist(userClass);
-            entityManager.flush();
+//            entityManager.flush();
         }
     }
 
@@ -59,6 +60,11 @@ public class Dao {
     }
 
     @Transactional(readOnly = true)
+    public String getEmail(String username){
+        return entityManager.createQuery("SELECT u.email FROM UserClass u WHERE u.username = :username", String.class).setParameter("username",username).getSingleResult();
+    }
+
+    @Transactional(readOnly = true)
     public String getBirthday(String username){
         return entityManager.createQuery("SELECT u.birthday FROM UserClass u WHERE u.username = :username", String.class).setParameter("username",username).getSingleResult();
     }
@@ -82,11 +88,57 @@ public class Dao {
         user.setPassword(password);
     }
 
-    @Loggable
+
+    // TODO
+//    @Loggable
+//    @Transactional
+//    public void verifyEmail(String username){
+//        UserClass user = getUserByUsername(username);
+//        user.verifyEmail();
+//    }
+
+    @Transactional(readOnly = true)
+    public Boolean isEmailVerified(String username){
+        return entityManager.createQuery("SELECT u.isEmailVerified from UserClass u WHERE u.username = :username", Boolean.class).setParameter("username",username).getSingleResult();
+    }
+
     @Transactional
     public void verifyEmail(String username){
         UserClass user = getUserByUsername(username);
-        user.verifyEmail();
+        String email = user.getEmail();
+
+        EmailVerification verif = entityManager.createQuery("SELECT ev FROM EmailVerification ev WHERE ev.user.username = :username", EmailVerification.class).setParameter("username",username).getSingleResult();
+
+        if(verif.getExpiresAt() != null && verif.getExpiresAt().before(new Date())){
+            // Do nothing
+            return;
+        }
+
+        String verificationCode = mqService.generateSecretCode(email);
+
+        verif.setCodeHash(verificationCode);
+        verif.setCreatedAt(new Date());
+        verif.setExpiresAt(new Date(System.currentTimeMillis()+1000*60*20));
+
+        entityManager.merge(verif);
+    }
+
+    @Transactional
+    public boolean verifyEmailByCode(String username, String code){
+        UserClass user = getUserByUsername(username);
+        EmailVerification verif = entityManager.createQuery("SELECT ev FROM EmailVerification ev WHERE ev.user.username = :username", EmailVerification.class).setParameter("username",username).getSingleResult();
+
+        if(verif.getExpiresAt().before(new Date())){
+            return false;
+        }
+        if(verif.getCodeHash().equals(code)){
+            verif.setVerified(true);
+            user.setEmailVerification(verif);
+            user.setEmailVerified(true);
+            entityManager.merge(user);
+            return true;
+        }
+        return false;
     }
 
     // News
