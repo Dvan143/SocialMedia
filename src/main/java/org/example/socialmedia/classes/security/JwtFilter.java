@@ -43,20 +43,25 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request,response);
             return;
         }
-        
-        try{
-            username = jwtService.extractUsername(token);
-            if(!jwtService.verifyToken(token,username)){
-                filterChain.doFilter(request,response);
-                return;
-            }
-        } catch (UsernameNotFoundException ex) {
+
+
+        username = jwtService.extractUsername(token);
+        if(!jwtService.verifyToken(token,username)){
             filterChain.doFilter(request,response);
             return;
         }
 
         if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-            UserDetails user = customUserDetailsService.loadUserByUsername(username);
+            UserDetails user = null;
+            try{
+                user = customUserDetailsService.loadUserByUsername(username);
+            } catch (UsernameNotFoundException ex) {
+                Cookie emptyCookie = new Cookie("JWT",null);
+                response.addCookie(emptyCookie);
+                SecurityContextHolder.clearContext();
+                response.sendRedirect("/socialmedia");
+                return;
+            }
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

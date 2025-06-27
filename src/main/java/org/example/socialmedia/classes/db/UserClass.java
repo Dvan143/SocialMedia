@@ -14,13 +14,16 @@ public class UserClass {
     @Column(unique = true)
     private String email;
     @Column
+    private Boolean isEmailVerified;
+    @Column
     private String password;
     @Column
     private String role;
     @Column
     private String birthday;
-
-    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private EmailVerification emailVerification;
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<News> news;
 
 //    @ManyToMany(mappedBy = "friends")
@@ -37,6 +40,11 @@ public class UserClass {
         this.email=email;
         this.password=password;
         this.role=role;
+        this.birthday="None";
+        this.isEmailVerified=false;
+
+        EmailVerification ev = new EmailVerification(this);
+        this.emailVerification=ev;
     }
 
     public UserClass(String username, String email, String password, String role, String birthday){
@@ -45,6 +53,10 @@ public class UserClass {
         this.password=password;
         this.role=role;
         this.birthday = birthday;
+        this.isEmailVerified=false;
+
+        EmailVerification ev = new EmailVerification(this);
+        this.emailVerification=ev;
     }
 
     public UserClass(String username, String password) {
@@ -68,6 +80,14 @@ public class UserClass {
         return role;
     }
 
+    public boolean isEmailVerified() {
+        return isEmailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        isEmailVerified = emailVerified;
+    }
+
     public String getBirthday() {
         return birthday;
     }
@@ -82,5 +102,13 @@ public class UserClass {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public EmailVerification getEmailVerification() {
+        return emailVerification;
+    }
+
+    public void setEmailVerification(EmailVerification emailVerification) {
+        this.emailVerification = emailVerification;
     }
 }

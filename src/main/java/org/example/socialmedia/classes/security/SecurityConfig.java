@@ -28,7 +28,8 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers("/logout","/api/newNews","/api/changeMyPassword")
                         )
-                .exceptionHandling(except -> except.accessDeniedPage("/error/403"))
+                .exceptionHandling(except -> except
+                        .accessDeniedPage("/error/403"))
                 .authorizeHttpRequests(auth -> auth
                         // Todo When the main page will be done
                         // Configure /api access

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -52,7 +54,12 @@ public class ApiController {
     @PostMapping("/newNews")
     public ResponseEntity<String> newNews(HttpServletResponse response, @RequestParam(name = "title") String title, @RequestParam(name = "content") String content) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserClass author = dao.getUserByUsername(username);
+        UserClass author;
+        try{
+            author = dao.getUserByUsername(username);
+        } catch (UsernameNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         if(dao.isTitleNewsExist(title)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
         News news = new News(getCurrentDateTime(), title, content, author);
@@ -95,10 +102,14 @@ public class ApiController {
         return dao.getNewsByPage(page);
     }
 
-    @GetMapping("/getMyBirthday")
-    public String getMyBirthday(){
+    @GetMapping("/getMyData")
+    public Map<String, String> getMyData(){
         String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        return dao.getBirthday(myUsername);
+        return Map.of(
+                "birthday", dao.getBirthday(myUsername),
+                "email", dao.getEmail(myUsername),
+                "isEmailVerified", String.valueOf(dao.isEmailVerified(myUsername))
+                );
     }
 
     @GetMapping("/setMyBirthday")
@@ -121,6 +132,24 @@ public class ApiController {
         }
     }
 
+    @GetMapping("/isEmailVerified")
+    public String isEmailVerified(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return String.valueOf(dao.isEmailVerified(username));
+    }
+
+    @GetMapping("/verifyMyEmail")
+    public void verifyMyEmail(){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        dao.verifyEmail(username);
+    }
+
+    @GetMapping("/checkEmailCode")
+    public boolean checkEmailCode(String code){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return dao.verifyEmailByCode(username,code);
+    }
+
     // Init users and news
     @PostConstruct
     public void init(){ // String username, String email, String password, String role, String birthday
@@ -135,29 +164,7 @@ public class ApiController {
         dao.saveNews(news);
         news = new News("12.11.2006 03:22", "Syria is bombed", "Syria is bombed today", user1);
         dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Gooooool", "Gooool in soccer!", user2);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Epidemic of COVID-19", "Epidemic of Covid had been started", user2);
-        dao.saveNews(news);
-        news = new News("02.11.1992 11:32", "Iraq is bofdsfdsmbed", "Usa bombed Iraq today", user1);
-        dao.saveNews(news);
-        news = new News("12.11.2as006 03:22as", "Syria is bofsddsfdmbed", "Syria is bosambed today", user1);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Goooadsoool", "Gooool in soccer!", user2);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Epidasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
-        dao.saveNews(news);
-        dao.saveNews(news);
-        news = new News("12.11.2as006 03:22as", "Syria is bodasasdfsddsfdmbed", "Syria is bosambed today", user1);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Goooadasddassoool", "Gooool in soccer!", user2);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Epidasadkjhjhkssasdasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
-        dao.saveNews(news);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Goojkhoadajhksddassoool", "Gooool in soccer!", user2);
-        dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Epidasadssahhhhsdasddsemic of COVID-19", "Epidemic of Covid had been started", user2);
+        news = new News(getCurrentDateTime(), "Gooooooool", "Gooooool in soccer", user2);
         dao.saveNews(news);
     }
 

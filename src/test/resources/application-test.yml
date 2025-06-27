@@ -1,3 +1,4 @@
+
 spring:
   application:
     name: SocialMedia
@@ -8,17 +9,16 @@ spring:
     username: h2
     password:
 
-  spring:
-    jpa:
-      hibernate:
-        ddl-auto: update
-      show-sql: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 logging:
   level:
     org:
       springframework:
-        #        security: DEBUG
         security: INFO
 
 SecretKey: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+TokenMaxAge: 3 # In days
