@@ -22,11 +22,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class ApiController {
-
     AuthenticationManager authenticationManager;
     JwtService jwtService;
     Dao dao;
     PasswordEncoder passwordEncoder;
+
     @Autowired
     public ApiController(AuthenticationManager authenticationManager, JwtService jwtService, Dao dao, PasswordEncoder passwordEncoder){
         this.authenticationManager = authenticationManager;
@@ -36,13 +36,9 @@ public class ApiController {
     }
 
     @GetMapping("/getMyUsername")
-    public String getMyUsername(){
+    public String getMyUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
-//    @GetMapping("/getusers")
-//    public List<UserClassDto> getUsers(){
-//        return dao.getUsers();
-//    }
 
     @GetMapping("/getUsersByPage")
     public List<UserClassDto> getUsersByPage(@RequestParam(name = "page") int page){

@@ -62,7 +62,6 @@ public class PageController {
         return "error/403";
     }
 
-    // Todo
     @GetMapping("/error/404")
     public String NotFound(){
         return "error/404";

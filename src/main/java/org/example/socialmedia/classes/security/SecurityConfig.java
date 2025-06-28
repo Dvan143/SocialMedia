@@ -31,10 +31,9 @@ public class SecurityConfig {
                 .exceptionHandling(except -> except
                         .accessDeniedPage("/error/403"))
                 .authorizeHttpRequests(auth -> auth
-                        // Todo When the main page will be done
-                        // Configure /api access
-                        .requestMatchers("/", "/login", "/register", "/logout", "/news", "/api/**", "/css/**","/js/**").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/", "/login", "/register", "/logout", "/news", "/css/**","/js/**").permitAll()
+                        .requestMatchers("/newNews","/api/**").authenticated()
+                        .anyRequest().hasRole("ADMIN")
                 )
                 .build();
     }
