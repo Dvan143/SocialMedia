@@ -1,26 +1,5 @@
 spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: 5672
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-logging:
-  level:
-    org:
-      example.socialmedia: INFO
-server:
-  servlet:
-    context-path: /socialmedia
-SecretKey: ${SECRET_KEY}
-TokenMaxAge: 3 # In days
+  application:
+    name: socialmedia
+  profiles:
+    active: dev

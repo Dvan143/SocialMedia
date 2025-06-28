@@ -37,8 +37,6 @@ public class Dao {
     public UserClass getUserByUsername(String username) throws UsernameNotFoundException {
         List<UserClass> result = entityManager.createQuery("SELECT u FROM UserClass u WHERE u.username = :username", UserClass.class).setParameter("username",username).getResultList();
         if(result.isEmpty()) throw new UsernameNotFoundException("User not found");
-//         TODO remove
-//        mqProducer.sendMessage("user gotten");
         return result.get(0);
     }
 
@@ -87,15 +85,6 @@ public class Dao {
         UserClass user = getUserByUsername(username);
         user.setPassword(password);
     }
-
-
-    // TODO
-//    @Loggable
-//    @Transactional
-//    public void verifyEmail(String username){
-//        UserClass user = getUserByUsername(username);
-//        user.verifyEmail();
-//    }
 
     @Transactional(readOnly = true)
     public Boolean isEmailVerified(String username){
