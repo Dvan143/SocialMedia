@@ -146,6 +146,13 @@ public class ApiController {
         return dao.verifyEmailByCode(username,code);
     }
 
+    @GetMapping("/resetMyPassword")
+    public boolean sendResetCode(String email){
+        if(!dao.isEmailExist(email)) return false;
+        dao.sendResetCode(email);
+        return true;
+    }
+
     // Init users and news
     @PostConstruct
     public void init(){ // String username, String email, String password, String role, String birthday

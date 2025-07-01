@@ -41,6 +41,13 @@ public class Dao {
     }
 
     @Transactional(readOnly = true)
+    public UserClass getUserByEmail(String email) throws EmailNotFoundException {
+        List<UserClass> result = entityManager.createQuery("SELECT u FROM UserClass u WHERE u.email = :email", UserClass.class).setParameter("email",email).getResultList();
+        if(result.isEmpty()) throw new EmailNotFoundException("Email not found");
+        return result.get(0);
+    }
+
+    @Transactional(readOnly = true)
     public List<UserClassDto> getUsersByPage(int page){
         if (page < 1) page = 1;
         int offset = (page - 1) * 10;
@@ -86,6 +93,8 @@ public class Dao {
         user.setPassword(password);
     }
 
+    // Email Service
+
     @Transactional(readOnly = true)
     public Boolean isEmailVerified(String username){
         return entityManager.createQuery("SELECT u.isEmailVerified from UserClass u WHERE u.username = :username", Boolean.class).setParameter("username",username).getSingleResult();
@@ -128,6 +137,17 @@ public class Dao {
             return true;
         }
         return false;
+    }
+
+    // UserInfo Service
+    @Transactional
+    public boolean sendResetCode(String email) throws EmailNotFoundException{
+        UserClass userClass = getUserByEmail(email);
+        String code = mqService.generateSecretCode(email);
+        userClass.setNewVerifyCode(code);
+
+        entityManager.merge(userClass);
+        return true;
     }
 
     // News

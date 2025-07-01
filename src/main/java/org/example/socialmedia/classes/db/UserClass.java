@@ -25,6 +25,8 @@ public class UserClass {
     private EmailVerification emailVerification;
     @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<News> news;
+    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private UserInfo userInfo;
 
 //    @ManyToMany(mappedBy = "friends")
 //    @JoinTable(name = "user_friends",
@@ -45,6 +47,9 @@ public class UserClass {
 
         EmailVerification ev = new EmailVerification(this);
         this.emailVerification=ev;
+
+        UserInfo uf = new UserInfo(this);
+        this.userInfo = uf;
     }
 
     public UserClass(String username, String email, String password, String role, String birthday){
@@ -57,6 +62,9 @@ public class UserClass {
 
         EmailVerification ev = new EmailVerification(this);
         this.emailVerification=ev;
+
+        UserInfo uf = new UserInfo(this);
+        this.userInfo = uf;
     }
 
     public UserClass(String username, String password) {
@@ -110,5 +118,9 @@ public class UserClass {
 
     public void setEmailVerification(EmailVerification emailVerification) {
         this.emailVerification = emailVerification;
+    }
+
+    public void setNewVerifyCode(String code){
+        this.userInfo.setCodeForResetPassword(code);
     }
 }
