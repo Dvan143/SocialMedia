@@ -16,10 +16,10 @@ public class ApiExceptionController {
     public ResponseEntity<String> authException(){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong credentials");
     }
-    /*@ExceptionHandler(UsernameNotFoundException.class)
+    @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<String> usernameException(){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Wrong credentials");
-    }*/
+    }
     @ExceptionHandler(HttpClientErrorException.Forbidden.class)
     public ResponseEntity<String> ForbiddenException(){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Forbidden act");
@@ -32,8 +32,8 @@ public class ApiExceptionController {
     public ResponseEntity<String> IoException(){
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
     }
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<String> AnyOtherException(){
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> AnyOtherException(){
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
+    }
 }

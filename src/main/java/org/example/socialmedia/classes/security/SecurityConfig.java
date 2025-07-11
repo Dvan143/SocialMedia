@@ -24,17 +24,19 @@ public class SecurityConfig {
                 .logout(logout -> logout.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/","/api/resetMyPassword","resetPassword", "/login", "/register", "/logout", "/news", "/css/**","/js/**").permitAll()
+                        .requestMatchers("/newNews","/api/**").authenticated()
+//                        .anyRequest().hasRole("ADMIN")
+                                .anyRequest().permitAll()
+                )
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/logout","/api/newNews","/api/changeMyPassword")
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                        .ignoringRequestMatchers("/logout","/resetPassword","/api/newNews","/api/changeMyPassword","/api/resetMyPassword")
+                                .disable()
                         )
                 .exceptionHandling(except -> except
                         .accessDeniedPage("/error/403"))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/logout", "/news", "/css/**","/js/**").permitAll()
-                        .requestMatchers("/newNews","/api/**").authenticated()
-                        .anyRequest().hasRole("ADMIN")
-                )
                 .build();
     }
     @Bean

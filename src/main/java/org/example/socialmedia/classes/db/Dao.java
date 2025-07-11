@@ -2,7 +2,7 @@ package org.example.socialmedia.classes.db;
 
 import jakarta.persistence.EntityManager;
 import org.example.socialmedia.classes.brockers.MqService;
-import org.example.socialmedia.classes.controllers.ApiExceptionController;
+//import org.example.socialmedia.classes.controllers.ApiExceptionController;
 import org.example.socialmedia.classes.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,8 +16,8 @@ import java.util.List;
 public class Dao {
     @Autowired
     EntityManager entityManager;
-    @Autowired
-    ApiExceptionController apiExceptionController;
+//    @Autowired
+//    ApiExceptionController apiExceptionController;
     //
     @Autowired
     MqService mqService;
@@ -29,7 +29,7 @@ public class Dao {
         // Check is user exist
         if(entityManager.createQuery("SELECT u FROM UserClass u WHERE u.username= :username OR u.email= :email").setParameter("username",userClass.getUsername()).setParameter("email",userClass.getEmail()).getResultList().isEmpty()) {
             entityManager.persist(userClass);
-//            entityManager.flush();
+            entityManager.flush();
         }
     }
 
@@ -37,6 +37,13 @@ public class Dao {
     public UserClass getUserByUsername(String username) throws UsernameNotFoundException {
         List<UserClass> result = entityManager.createQuery("SELECT u FROM UserClass u WHERE u.username = :username", UserClass.class).setParameter("username",username).getResultList();
         if(result.isEmpty()) throw new UsernameNotFoundException("User not found");
+        return result.get(0);
+    }
+
+    @Transactional(readOnly = true)
+    public UserClass getUserByEmail(String email) throws EmailNotFoundException {
+        List<UserClass> result = entityManager.createQuery("SELECT u FROM UserClass u WHERE u.email = :email", UserClass.class).setParameter("email",email).getResultList();
+        if(result.isEmpty()) throw new EmailNotFoundException("Email not found");
         return result.get(0);
     }
 
@@ -86,6 +93,8 @@ public class Dao {
         user.setPassword(password);
     }
 
+    // Email Service
+
     @Transactional(readOnly = true)
     public Boolean isEmailVerified(String username){
         return entityManager.createQuery("SELECT u.isEmailVerified from UserClass u WHERE u.username = :username", Boolean.class).setParameter("username",username).getSingleResult();
@@ -122,12 +131,23 @@ public class Dao {
         }
         if(verif.getCodeHash().equals(code)){
             verif.setVerified(true);
-            user.setEmailVerification(verif);
-            user.setEmailVerified(true);
+//            user.setEmailVerification(verif);
+//            user.setEmailVerified(true);
             entityManager.merge(user);
             return true;
         }
         return false;
+    }
+
+    // UserInfo Service
+    @Transactional
+    public boolean sendResetCode(String email) throws EmailNotFoundException{
+        UserClass userClass = getUserByEmail(email);
+        String code = mqService.generateSecretCode(email);
+//        userClass.setNewVerifyCode(code);
+
+        entityManager.merge(userClass);
+        return true;
     }
 
     // News
@@ -137,14 +157,9 @@ public class Dao {
         // Check is news exist
         if(entityManager.createQuery("SELECT n FROM News n WHERE n.title =:title").setParameter("title",news.getTitle()).getResultList().isEmpty()) {
             entityManager.persist(news);
-//            entityManager.flush();
         }
     }
 
-//    @Transactional(readOnly = true)
-//    public List<News> getNewsByUsername(String username){
-//        return entityManager.createQuery("SELECT n FROM News n JOIN n.author a WHERE a.username = :username", News.class).setParameter("username",username).getResultList();
-//    }
 
     @Transactional(readOnly = true)
     public List<NewsDto> getNews(){

@@ -25,5 +25,5 @@ logging:
 server:
   servlet:
     context-path: /socialmedia
-SecretKey: ${SECRET_KEY}
-TokenMaxAge: ${TOKEN_MAX_AGE}
+secret-key: ${SECRET_KEY}
+token-max-age: ${TOKEN_MAX_AGE}

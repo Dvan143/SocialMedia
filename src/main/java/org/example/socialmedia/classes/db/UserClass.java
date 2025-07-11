@@ -23,14 +23,11 @@ public class UserClass {
     private String birthday;
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private EmailVerification emailVerification;
+    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    private UserInfo userInfo;
     @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<News> news;
-
-//    @ManyToMany(mappedBy = "friends")
-//    @JoinTable(name = "user_friends",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "friend_id"))
-//    private Set<UserClass> friends;
+    // TODO friends column
 
     public UserClass(){
     }
@@ -45,6 +42,8 @@ public class UserClass {
 
         EmailVerification ev = new EmailVerification(this);
         this.emailVerification=ev;
+        UserInfo uf = new UserInfo(this);
+        this.userInfo = uf;
     }
 
     public UserClass(String username, String email, String password, String role, String birthday){
@@ -57,11 +56,8 @@ public class UserClass {
 
         EmailVerification ev = new EmailVerification(this);
         this.emailVerification=ev;
-    }
-
-    public UserClass(String username, String password) {
-        this.username=username;
-        this.password=password;
+        UserInfo uf = new UserInfo(this);
+        this.userInfo = uf;
     }
 
     public String getUsername() {
@@ -110,5 +106,13 @@ public class UserClass {
 
     public void setEmailVerification(EmailVerification emailVerification) {
         this.emailVerification = emailVerification;
+    }
+
+    public void setNewVerifyCode(String code){
+        this.userInfo.setCodeForResetPassword(code);
+    }
+
+    public void setUserInfo(UserInfo userInfo){
+        this.userInfo = userInfo;
     }
 }

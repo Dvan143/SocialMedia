@@ -57,6 +57,11 @@ public class PageController {
         return "changePassword";
     }
 
+    @GetMapping("/resetPassword")
+    public String resetPassword(){
+        return "resetPassword";
+    }
+
     @GetMapping("/error/403")
     public String Unauthorized(){
         return "error/403";
