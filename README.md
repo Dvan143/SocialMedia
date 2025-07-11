@@ -21,7 +21,7 @@ Step 2: Pull any SQL database and RabbitMq from DockerHub
 
 Step 3: Set up the .env file
 
-Step 4: Start all docker conatiners
+Step 4: Start all docker conatiners(compose.yml included)
 
 Step 5: You are awesome! 
 
