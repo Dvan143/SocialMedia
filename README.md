@@ -2,7 +2,7 @@
 ### I am Java Spring Boot developer
 I made this project for practice in many technologies: web development on Spring Framework, using PostgreSQL, using RabbitMq and other technologies.
 
-Skills: Java / Spring Framework / RabbitMq / PostgreSQL / JS / HTML / CSS
+Skills: Java / Spring Framework / RabbitMq / PostgreSQL / JS / HTML / CSS / Docker
 
 ### How to set up the project
 Step 1: Create a .env file in the project root
