@@ -27,11 +27,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/api/resetMyPassword","resetPassword", "/login", "/register", "/logout", "/news", "/css/**","/js/**").permitAll()
                         .requestMatchers("/newNews","/api/**").authenticated()
-                        .anyRequest().hasRole("ADMIN")
+//                        .anyRequest().hasRole("ADMIN")
+                                .anyRequest().permitAll()
                 )
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/logout","/resetPassword","/api/newNews","/api/changeMyPassword","/api/resetMyPassword")
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                        .ignoringRequestMatchers("/logout","/resetPassword","/api/newNews","/api/changeMyPassword","/api/resetMyPassword")
+                                .disable()
                         )
                 .exceptionHandling(except -> except
                         .accessDeniedPage("/error/403"))

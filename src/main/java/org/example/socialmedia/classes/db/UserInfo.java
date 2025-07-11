@@ -16,23 +16,15 @@ public class UserInfo {
     public UserInfo() {
     }
 
-    public UserInfo(UserClass user) {
-        this.codeForResetPassword = codeForResetPassword;
-        setUser(user);
-    }
-
-    public void setUser(UserClass user) {
-        this.user = user;
+    public UserInfo(UserClass userClass) {
+        this.user = userClass;
     }
 
     public String getCodeForResetPassword() {
         return codeForResetPassword;
     }
 
-    public void setCodeForResetPassword(String code) {
-        this.codeForResetPassword = code;
+    public void setCodeForResetPassword(String codeForResetPassword) {
+        this.codeForResetPassword = codeForResetPassword;
     }
-
-
-
 }

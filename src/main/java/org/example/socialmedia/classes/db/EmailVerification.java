@@ -21,6 +21,10 @@ public class EmailVerification {
     @Column
     private Date expiresAt;
 
+    public EmailVerification() {
+
+    }
+
     public String getCodeHash() {
         return codeHash;
     }
@@ -56,21 +60,9 @@ public class EmailVerification {
     public void setVerified(boolean verified) {
         isVerified = verified;
     }
-//    public EmailVerification(UserClass user, String codeHash, Date createdAt, Date expiresAt) {
-//        this.user = user;
-//        this.codeHash = codeHash;
-//        this.createdAt = createdAt;
-//        this.expiresAt = expiresAt;
-//        this.isVerified = false;
-//    }
 
     public EmailVerification(UserClass userClass) {
         this.user = userClass;
         this.isVerified=false;
-        userClass.setEmailVerification(this);
-    }
-
-    public EmailVerification() {
-
     }
 }

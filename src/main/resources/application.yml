@@ -2,4 +2,4 @@ spring:
   application:
     name: socialmedia
   profiles:
-    active: ${SETTINGS_PROFILE:dev}
+    active: prod # prod or dev

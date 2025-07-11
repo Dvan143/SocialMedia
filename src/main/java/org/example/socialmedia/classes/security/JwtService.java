@@ -10,9 +10,9 @@ import java.util.Date;
 
 @Component
 public class JwtService {
-    @Value("${SecretKey}")
+    @Value("${secret-key}")
     public String secret;
-    @Value("${TokenMaxAge}")
+    @Value("${token-max-age}")
     long TOKEN_MAX_AGE; // in days
 
     public String generateToken(String username){

@@ -23,16 +23,11 @@ public class UserClass {
     private String birthday;
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private EmailVerification emailVerification;
-    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<News> news;
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private UserInfo userInfo;
-
-//    @ManyToMany(mappedBy = "friends")
-//    @JoinTable(name = "user_friends",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "friend_id"))
-//    private Set<UserClass> friends;
+    @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<News> news;
+    // TODO friends column
 
     public UserClass(){
     }
@@ -47,7 +42,6 @@ public class UserClass {
 
         EmailVerification ev = new EmailVerification(this);
         this.emailVerification=ev;
-
         UserInfo uf = new UserInfo(this);
         this.userInfo = uf;
     }
@@ -62,14 +56,8 @@ public class UserClass {
 
         EmailVerification ev = new EmailVerification(this);
         this.emailVerification=ev;
-
         UserInfo uf = new UserInfo(this);
         this.userInfo = uf;
-    }
-
-    public UserClass(String username, String password) {
-        this.username=username;
-        this.password=password;
     }
 
     public String getUsername() {
@@ -122,5 +110,9 @@ public class UserClass {
 
     public void setNewVerifyCode(String code){
         this.userInfo.setCodeForResetPassword(code);
+    }
+
+    public void setUserInfo(UserInfo userInfo){
+        this.userInfo = userInfo;
     }
 }

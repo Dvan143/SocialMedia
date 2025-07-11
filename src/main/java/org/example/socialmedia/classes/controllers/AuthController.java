@@ -25,13 +25,13 @@ import java.io.IOException;
 
 @RestController
 public class AuthController {
-    @Value("${TokenMaxAge}")
+    @Value("${token-max-age}")
     long COOKIE_MAX_AGE; // in days
 
-    Dao dao;
-    JwtService jwtService;
-    AuthenticationManager authenticationManager;
-    PasswordEncoder passwordEncoder;
+    private Dao dao;
+    private JwtService jwtService;
+    private AuthenticationManager authenticationManager;
+    private PasswordEncoder passwordEncoder;
     @Autowired
     public AuthController(Dao dao, JwtService jwtService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder){
         this.dao = dao;

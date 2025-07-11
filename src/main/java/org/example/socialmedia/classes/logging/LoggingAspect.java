@@ -1,6 +1,7 @@
 package org.example.socialmedia.classes.logging;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,18 +18,10 @@ public class LoggingAspect {
     public void loggableMethods(){
     }
 
-    @Before("loggableMethods()")
-    public void logBefore(JoinPoint joinPoint){
+    @Around("loggableMethods()")
+    public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         logger.info("Calling method: {} with args: {}", joinPoint.getSignature(), Arrays.toString(joinPoint.getArgs()));
+        return joinPoint.proceed();
     }
 
-    @AfterReturning(pointcut = "loggableMethods()", returning = "result")
-    public void logAfterReturning(JoinPoint joinPoint, Object result) {
-        logger.info("Method {} returned: {}", joinPoint.getSignature(), result);
-    }
-
-    @AfterThrowing(pointcut = "loggableMethods()", throwing = "ex")
-    public void logAfterThrowing(JoinPoint joinPoint, Throwable ex){
-        logger.error("Method {} threw exception: {}", joinPoint.getSignature(), ex.getMessage());
-    }
 }

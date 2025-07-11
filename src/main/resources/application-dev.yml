@@ -7,9 +7,9 @@ spring:
 
   rabbitmq:
     host: no_value
-    port: 5672
-    username: guest
-    password: guest
+    port: 1111
+    username: no_value
+    password: no_value
 
   jpa:
     hibernate:
@@ -21,7 +21,6 @@ logging:
   level:
     org:
       example.socialmedia: INFO
-      springframework.security: DEBUG
 
 server:
   servlet:
