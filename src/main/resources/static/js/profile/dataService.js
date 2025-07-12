@@ -26,7 +26,6 @@ fetch('/socialmedia/api/getMyData') // birthday email isVerifiedEmail
                 `
             }
     })
-
 function sendMail(){
         const verifySpan = document.getElementById('verifyContainer')
         void fetch('/socialmedia/api/verifyMyEmail')

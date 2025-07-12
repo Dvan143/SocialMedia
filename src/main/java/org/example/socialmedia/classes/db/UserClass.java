@@ -76,14 +76,6 @@ public class UserClass {
         return role;
     }
 
-    public boolean isEmailVerified() {
-        return isEmailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        isEmailVerified = emailVerified;
-    }
-
     public String getBirthday() {
         return birthday;
     }
@@ -100,6 +92,10 @@ public class UserClass {
         this.password = password;
     }
 
+    public void setEmailVerified(){
+        this.isEmailVerified = true;
+    }
+
     public EmailVerification getEmailVerification() {
         return emailVerification;
     }
@@ -114,5 +110,13 @@ public class UserClass {
 
     public void setUserInfo(UserInfo userInfo){
         this.userInfo = userInfo;
+    }
+
+    public void minusAttemptForResetCode(){
+        emailVerification.minusAttempt();
+    }
+
+    public byte getAttempts(){
+        return emailVerification.getAttempts();
     }
 }

@@ -137,13 +137,13 @@ public class ApiController {
     @GetMapping("/verifyMyEmail")
     public void verifyMyEmail(){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        dao.verifyEmail(username);
+        dao.sendEmailVerificationCode(username);
     }
 
     @GetMapping("/checkEmailCode")
-    public boolean checkEmailCode(String code){
+    public String checkEmailCode(@RequestParam(name = "code") String code){
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return dao.verifyEmailByCode(username,code);
+        return String.valueOf(dao.isEmailVerifyCodeCorrect(username,code));
     }
 
     @GetMapping("/resetMyPassword")
@@ -167,7 +167,9 @@ public class ApiController {
         dao.saveNews(news);
         news = new News("12.11.2006 03:22", "Syria is bombed", "Syria is bombed today", user1);
         dao.saveNews(news);
-        news = new News(getCurrentDateTime(), "Gooooooool", "Gooooool in soccer", user2);
+        news = new News(getCurrentDateTime(), "Gooooooool", "Gooooool in a soccer", user2);
+        dao.saveNews(news);
+        news = new News(getCurrentDateTime(),"Weather in London", "Weather in London is around 20 degrees celsius",user1);
         dao.saveNews(news);
     }
 

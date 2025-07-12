@@ -2,4 +2,4 @@ spring:
   application:
     name: socialmedia
   profiles:
-    active: prod # prod or dev
+    active: dev # prod or dev
