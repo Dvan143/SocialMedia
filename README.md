@@ -27,3 +27,8 @@ Step 5: You are awesome!
 
 ### You can test the project at site https://vishnivetskiyprojects.ru/socialmedia
 #### or visit my web site with many projects https://vishnivetskiyprojects.ru
+
+### Licenses
+
+This project uses the Docker image boky/postfix from Docker Hub.
+© [bokysan](https://github.com/bokysan), licensed under the MIT License.
