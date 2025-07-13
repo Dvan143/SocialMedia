@@ -1,4 +1,7 @@
-unavailable.properties
+.env
+Dockerfile
+keystore.p12
+server.xml
 
 HELP.md
 target/
