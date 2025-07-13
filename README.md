@@ -25,6 +25,25 @@ Step 4: Start all docker conatiners(compose.yml included)
 
 Step 5: You are awesome! 
 
+#### In code:
+Package project to war file.
+
+Create Dockerfile for this project. For example:
+```Dockerfile
+FROM tomcat:11.0.8-jdk21-temurin-noble
+RUN rm -rf /usr/local/tomcat/webapps/*
+COPY target/SocialMedia-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/socialmedia.war
+COPY DefaultPage.war /usr/local/tomcat/webapps/ROOT.war
+EXPOSE 8080
+```
+Create Docker image from the Dockerfile
+```
+docker build -t socialmedia .
+```
+After setting the .env file, you can start the Docker containers using Docker Compose.
+```
+docker compose --env-file .env up
+```
 ### You can test the project at site https://vishnivetskiyprojects.ru/socialmedia
 #### or visit my web site with many projects https://vishnivetskiyprojects.ru
 
