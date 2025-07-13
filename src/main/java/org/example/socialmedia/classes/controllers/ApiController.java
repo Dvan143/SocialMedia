@@ -146,13 +146,6 @@ public class ApiController {
         return String.valueOf(dao.isEmailVerifyCodeCorrect(username,code));
     }
 
-    @GetMapping("/resetMyPassword")
-    public boolean sendResetCode(String email){
-        if(!dao.isEmailExist(email)) return false;
-        dao.sendResetCode(email);
-        return true;
-    }
-
     // Init users and news
     @PostConstruct
     public void init(){ // String username, String email, String password, String role, String birthday
@@ -163,14 +156,13 @@ public class ApiController {
 
         // String date, String title, String content, UserClass author
         News news;
-        news = new News("02.11.1992 11:32", "Iraq is bombed", "Usa bombed Iraq today", user1);
-        dao.saveNews(news);
-        news = new News("12.11.2006 03:22", "Syria is bombed", "Syria is bombed today", user1);
+        news = new News(getCurrentDateTime(),"Weather in London", "Weather in London is around 20 degrees celsius",user1);
         dao.saveNews(news);
         news = new News(getCurrentDateTime(), "Gooooooool", "Gooooool in a soccer", user2);
         dao.saveNews(news);
-        news = new News(getCurrentDateTime(),"Weather in London", "Weather in London is around 20 degrees celsius",user1);
+        news = new News("12.11.2006 03:22", "Syria is bombed", "Syria is bombed today", user1);
         dao.saveNews(news);
+
     }
 
     // Generate and set cookie and send authentication to security context

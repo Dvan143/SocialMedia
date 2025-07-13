@@ -2,7 +2,6 @@ package org.example.socialmedia.classes.db;
 
 import jakarta.persistence.EntityManager;
 import org.example.socialmedia.classes.brockers.MqService;
-//import org.example.socialmedia.classes.controllers.ApiExceptionController;
 import org.example.socialmedia.classes.logging.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,9 +17,6 @@ public class Dao {
 
     @Autowired
     EntityManager entityManager;
-    //    @Autowired
-//    ApiExceptionController apiExceptionController;
-    //
     @Autowired
     MqService mqService;
 
@@ -125,17 +121,6 @@ public class Dao {
             userClass.minusAttemptForResetCode();
             return false;
         }
-    }
-
-    // UserInfo Service
-    @Transactional
-    public boolean sendResetCode(String email) throws EmailNotFoundException {
-        UserClass userClass = getUserByEmail(email);
-        String code = mqService.generateSecretCode(email);
-//        userClass.setNewVerifyCode(code);
-        // TODO
-        entityManager.merge(userClass);
-        return true;
     }
 
     // News
