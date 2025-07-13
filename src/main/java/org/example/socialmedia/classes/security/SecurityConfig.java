@@ -11,7 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 public class SecurityConfig {
@@ -22,19 +21,13 @@ public class SecurityConfig {
         return http
                 .formLogin(login -> login.disable())
                 .logout(logout -> logout.disable())
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/","/api/resetMyPassword","resetPassword", "/login", "/register", "/logout", "/news", "/css/**","/js/**").permitAll()
                         .requestMatchers("/newNews","/api/**").authenticated()
-//                        .anyRequest().hasRole("ADMIN")
-                                .anyRequest().permitAll()
                 )
-                .csrf(csrf -> csrf
-//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                        .ignoringRequestMatchers("/logout","/resetPassword","/api/newNews","/api/changeMyPassword","/api/resetMyPassword")
-                                .disable()
-                        )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(except -> except
                         .accessDeniedPage("/error/403"))
                 .build();

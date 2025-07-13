@@ -1,11 +1,10 @@
 services:
   socialmedia:
-    build:
-      context: .
-    image: socialmedia
+    image: dvan143/socialmedia
     container_name: socialMediaApp
     ports:
       - "80:8080"
+      - "443:8443"
     depends_on:
       - rabbitmq
       - db
@@ -17,8 +16,16 @@ services:
     env_file:
       - .env
     depends_on:
+      - smtpService
       - socialmedia
       - rabbitmq
+  smtpService:
+    image: boky/postfix
+    container_name: smtpService
+    env_file:
+      - .env
+    ports:
+      - "25:25"
   db:
     image: postgres:latest
     container_name: postgres_db

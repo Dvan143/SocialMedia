@@ -23,8 +23,6 @@ public class UserClass {
     private String birthday;
     @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private EmailVerification emailVerification;
-    @OneToOne(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private UserInfo userInfo;
     @OneToMany(mappedBy = "author", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<News> news;
     // TODO friends column
@@ -42,8 +40,6 @@ public class UserClass {
 
         EmailVerification ev = new EmailVerification(this);
         this.emailVerification=ev;
-        UserInfo uf = new UserInfo(this);
-        this.userInfo = uf;
     }
 
     public UserClass(String username, String email, String password, String role, String birthday){
@@ -56,8 +52,6 @@ public class UserClass {
 
         EmailVerification ev = new EmailVerification(this);
         this.emailVerification=ev;
-        UserInfo uf = new UserInfo(this);
-        this.userInfo = uf;
     }
 
     public String getUsername() {
@@ -76,17 +70,6 @@ public class UserClass {
         return role;
     }
 
-    public boolean isEmailVerified() {
-        return isEmailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        isEmailVerified = emailVerified;
-    }
-
-    public String getBirthday() {
-        return birthday;
-    }
 
     public List<News> getNews() {
         return news;
@@ -100,19 +83,19 @@ public class UserClass {
         this.password = password;
     }
 
+    public void setEmailVerified(){
+        this.isEmailVerified = true;
+    }
+
     public EmailVerification getEmailVerification() {
         return emailVerification;
     }
 
-    public void setEmailVerification(EmailVerification emailVerification) {
-        this.emailVerification = emailVerification;
+    public void minusAttemptForResetCode(){
+        emailVerification.minusAttempt();
     }
 
-    public void setNewVerifyCode(String code){
-        this.userInfo.setCodeForResetPassword(code);
-    }
-
-    public void setUserInfo(UserInfo userInfo){
-        this.userInfo = userInfo;
+    public byte getAttempts(){
+        return emailVerification.getAttempts();
     }
 }
