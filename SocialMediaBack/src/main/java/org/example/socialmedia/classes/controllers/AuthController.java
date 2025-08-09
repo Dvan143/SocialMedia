@@ -17,10 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
@@ -79,7 +76,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResponseEntity<String> logout(HttpServletResponse response) throws IOException {
         // Creating empty cookie
         Cookie emptyCookie = new Cookie("JWT",null);
@@ -87,9 +84,10 @@ public class AuthController {
         response.addCookie(emptyCookie);
         emptyCookie.setHttpOnly(true);
         emptyCookie.setSecure(false);
-        emptyCookie.setPath("/");
+        emptyCookie.setPath("/socialmedia");
         emptyCookie.setMaxAge(0);
         // Sending empty security authentication
+        response.addCookie(emptyCookie);
         SecurityContextHolder.clearContext();
         // Redirecting to login page
         response.sendRedirect("/socialmedia/login");
