@@ -1,36 +1,46 @@
 services:
-  socialmedia:
-    image: dvan143/socialmedia
-    container_name: socialMediaApp
+  socialmediaback:
+#    image: dvan143/socialmediaback
+    build:
+      context: SocialMediaBack/.
+    container_name: socialmediaback
     ports:
-      - "80:8080"
-      - "443:8443"
+      - "8080:8080"
     depends_on:
       - rabbitmq
       - db
     env_file:
-      - .env
+      - SocialMediaBack/.env
+  socialmediafront:
+#    image: dvan143/socialmediafront
+    build:
+      context: SocialMediaFront/.
+    container_name: socialmediafront
+    ports:
+      - "80:80"
+    depends_on:
+      - socialmediaback
   emailVerifier:
     image: dvan143/emailverifier
     container_name: emailVerifier
     env_file:
-      - .env
+      - SocialMediaBack/.env
     depends_on:
       - smtpService
-      - socialmedia
+      - socialmediaback
       - rabbitmq
   smtpService:
-    image: boky/postfix
+    image: boky/postfix:4.4.0-debian
     container_name: smtpService
     env_file:
-      - .env
+      - SocialMediaBack/.env
     ports:
       - "25:25"
   db:
     image: postgres:latest
     container_name: postgres_db
     env_file:
-      - .env
+      - SocialMediaBack/.env
     ports:
       - "5432:5432"
     volumes:
@@ -42,7 +52,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     env_file:
-      - .env
+      - SocialMediaBack/.env
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
 volumes:

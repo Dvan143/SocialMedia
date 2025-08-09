@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My profile</title>
+</head>
+<script src="/socialmedia/js/main/gettingUsername.js"></script>
+<script src="/socialmedia/js/profile/dataService.js"></script>
+<script src="/socialmedia/js/profile/changeBirthday.js"></script>
+<body>
+<div class="header">
+    <span class="logo">
+        <a href="/socialmedia">SocialMedia</a>
+    </span>
+    <span class="urls">
+        <a href="/socialmedia/newNews">Add news</a>
+        <a href="/socialmedia/myProfile">My profile</a>
+        <a href="/socialmedia" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
+
+        <!--        aren't diplayed-->
+        <form id="logoutForm" action=/socialmedia/logout" method="post" style="display:none;"></form>
+        <!--        -->
+
+    </span>
+</div>
+<div id="profile-page" class="doCenter">
+    <div class="orange-element">Your username: <br><span id="username"></span></div>
+    <div class="orange-element">Your email: <br><span id="email"></span></div>
+    <div class="orange-element">Birthday date: <br><span id="birthday"></span> </div>
+</div>
+<div class="orange-element doLeft">
+    <a class="blueUrl orange-element" href="/socialmedia/changePassword">Change password</a>
+    <span class="orange-element" id="verifyContainer"></span>
+    <div class="orange-element">Change birthday date <br> <input type="date" id="newBirthdayDate" min="1900-01-01" max="2020-01-01"><a class="blueUrl" onclick="changeBirthday()">Change</a></div>
+</div>
+<link rel="stylesheet" href="/socialmedia/css/styles.css">
+</body>
+</html>

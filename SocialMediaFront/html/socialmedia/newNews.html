@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Creating news</title>
+</head>
+<body>
+<div class="header">
+    <span class="logo">
+        <a href="/socialmedia">SocialMedia</a>
+    </span>
+    <span class="urls">
+        <a href="/socialmedia/newNews">Add news</a>
+        <a href="/socialmedia/myProfile">My profile</a>
+        <a href="/socialmedia" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
+
+        <!--        aren't diplayed-->
+        <form id="logoutForm" action="/socialmedia/logout" method="post" style="display:none;"></form>
+        <!--        -->
+
+    </span>
+</div>
+<div id="newNews-form">
+<form action="/socialmedia/api/newNews" method="post">
+    <div class="underText">Title</div>
+    <input type="text" class="item title" name="title" minlength="5" maxlength="50"> <br> <br>
+    <div class="underText">Content</div>
+    <textarea class="item content" name="content" minlength="10" maxlength="340"></textarea> <br> <br>
+    <div class="button">
+        <input class="button" type="submit" value="Create">
+    </div>
+</form>
+</div>
+<link rel="stylesheet" href="css/styles.css">
+</body>
+</html>
