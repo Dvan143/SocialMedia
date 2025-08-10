@@ -1,6 +1,9 @@
 // Fetch 5 latest news
 fetch('/socialmedia/api/getLastNews')
-    .then(resp => resp.json())
+    .then(resp => {
+        if(resp.status===403) window.location='/socialmedia/login'
+        return resp.json()
+    })
     .then(newsList => {
         renderLastNews(newsList,'newsContainer')
     })
@@ -8,6 +11,9 @@ fetch('/socialmedia/api/getLastNews')
 
 // Fetch 5 latest news by authorized user
 fetch('/socialmedia/api/getMyLastNews')
+    .then(resp => {
+        if(resp.status===403) window.location='/socialmedia/login'
+    })
     .then(resp => resp.json())
     .then(newsList => {
         renderLastNews(newsList,'myNewsContainer')
