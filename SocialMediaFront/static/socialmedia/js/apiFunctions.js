@@ -8,7 +8,6 @@ function renderLastNews(newsList, containerName) {
         return;
     }
 
-    // 🔒 Ограничение до 10 новостей
     const maxNews = 10;
     const chunkSize = 5;
     const limitedNewsList = newsList.slice(0, maxNews);

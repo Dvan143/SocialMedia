@@ -8,11 +8,8 @@ import org.example.socialmedia.classes.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-public class ApiController {
+public class ApiController extends ParentController{
     AuthenticationManager authenticationManager;
     JwtService jwtService;
     Dao dao;
@@ -39,26 +36,22 @@ public class ApiController {
     }
 
     @GetMapping("/getMyUsername")
-    public String getMyUsername() {
+    public String getMyUsername(HttpServletResponse resp) throws IOException {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     @GetMapping("/getUsersByPage")
-    public List<UserClassDto> getUsersByPage(@RequestParam(name = "page") int page){
+    public List<UserClassDto> getUsersByPage(@RequestParam(name = "page") int page, HttpServletResponse resp) throws IOException {
         return dao.getUsersByPage(page);
     }
 
     // News table logic
 
     @PostMapping("/newNews")
-    public ResponseEntity<String> newNews(HttpServletResponse response, @RequestParam(name = "title") String title, @RequestParam(name = "content") String content) throws IOException {
+    public ResponseEntity<String> newNews(HttpServletResponse response, @RequestParam(name = "title") String title, @RequestParam(name = "content") String content, HttpServletResponse resp) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserClass author;
-        try{
             author = dao.getUserByUsername(username);
-        } catch (UsernameNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         if(dao.isTitleNewsExist(title)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
 
         News news = new News(getCurrentDateTime(), title, content, author);
@@ -70,40 +63,40 @@ public class ApiController {
     }
 
     @GetMapping("/getAllNews")
-    public List<NewsDto> getAllNews(){
+    public List<NewsDto> getAllNews(HttpServletResponse resp) throws IOException {
         return dao.getNews();
     }
 
     @Loggable
     @GetMapping("/getLastNews")
-    public List<NewsDto> getLastNews(){
+    public List<NewsDto> getLastNews(HttpServletResponse resp) throws IOException {
         return dao.getNewsByPage(1);
     }
 
     @GetMapping("/getMyNews")
-    public List<NewsDto> getMyNews(){
+    public List<NewsDto> getMyNews(HttpServletResponse resp) throws IOException {
         String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return dao.getUserNews(myUsername);
     }
 
     @GetMapping("/getMyLastNews")
-    public List<NewsDto> getMyLastNews(){
+    public List<NewsDto> getMyLastNews(HttpServletResponse resp) throws IOException {
         String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return dao.getUserNewsByPage(myUsername,1);
     }
 
     @GetMapping("/getNewsPages")
-    public Long getNewsCount(){
+    public Long getNewsCount(HttpServletResponse resp) throws IOException {
         return dao.getNewsPages();
     }
 
     @GetMapping("/getNewsByPage")
-    public List<NewsDto> getNewsByPage(int page){
+    public List<NewsDto> getNewsByPage(int page, HttpServletResponse resp) throws IOException {
         return dao.getNewsByPage(page);
     }
 
     @GetMapping("/getMyData")
-    public Map<String, String> getMyData(){
+    public Map<String, String> getMyData(HttpServletResponse resp) throws IOException {
         String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return Map.of(
                 "birthday", dao.getBirthday(myUsername),
@@ -113,13 +106,13 @@ public class ApiController {
     }
 
     @GetMapping("/setMyBirthday")
-    public void setMyBirthday(@RequestParam(name = "birthday") String birthday){
+    public void setMyBirthday(@RequestParam(name = "birthday") String birthday, HttpServletResponse resp) throws IOException {
         String myUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         dao.setBirthday(myUsername,birthday);
     }
 
     @PostMapping("/changeMyPassword")
-    public ResponseEntity<String> changeMyPassword(HttpServletResponse response, @RequestParam(name = "oldPassword") String oldPassword, @RequestParam(name = "newPassword") String newPassword) throws IOException {
+    public ResponseEntity<String> changeMyPassword(HttpServletResponse resp, @RequestParam(name = "oldPassword") String oldPassword, @RequestParam(name = "newPassword") String newPassword) throws IOException {
         newPassword = passwordEncoder.encode(newPassword);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         String userPassword = dao.getPassword(username);
@@ -127,25 +120,25 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } else {
             dao.changePassword(username, newPassword);
-            response.sendRedirect("/socialmedia");
+            resp.sendRedirect("/socialmedia");
             return ResponseEntity.status(HttpStatus.OK).build();
         }
     }
 
     @GetMapping("/isEmailVerified")
-    public String isEmailVerified(){
+    public String isEmailVerified(HttpServletResponse resp) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return String.valueOf(dao.isEmailVerified(username));
     }
 
     @GetMapping("/verifyMyEmail")
-    public void verifyMyEmail(){
+    public void verifyMyEmail(HttpServletResponse resp) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         dao.sendEmailVerificationCode(username);
     }
 
     @GetMapping("/checkEmailCode")
-    public String checkEmailCode(@RequestParam(name = "code") String code){
+    public String checkEmailCode(@RequestParam(name = "code") String code, HttpServletResponse resp) throws IOException {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return String.valueOf(dao.isEmailVerifyCodeCorrect(username,code));
     }
@@ -174,17 +167,6 @@ public class ApiController {
     public String getCurrentDateTime(){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         return LocalDateTime.now().format(formatter);
-    }
-
-    private boolean isAuthenticated(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth!=null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken);
-    }
-    private void ifUnauthorizedRedirect(HttpServletResponse response) throws IOException {
-        if(!isAuthenticated()) response.sendRedirect("/socialmedia/login");
-    }
-    private void ifAuthorizedRedirect(HttpServletResponse response) throws IOException {
-        if(isAuthenticated()) response.sendRedirect("/socialmedia");
     }
 
 }

@@ -1,5 +1,8 @@
 fetch('/socialmedia/api/getMyData') // birthday email isVerifiedEmail
-    .then(resp => resp.json())
+    .then(resp => {
+        if(resp.status===403) window.location='/socialmedia/login'
+        return resp.json();
+    })
     .then(resp => {
         const birthdaySpan = document.getElementById('birthday')
         const emailSpan = document.getElementById('email')

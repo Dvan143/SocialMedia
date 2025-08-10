@@ -23,7 +23,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
-public class AuthController {
+public class AuthController extends ParentController{
     @Value("${token-max-age}")
     long COOKIE_MAX_AGE; // in days
 
@@ -41,14 +41,15 @@ public class AuthController {
 
     // Users table logic
     @PostMapping("/login")
-    public ResponseEntity<String> login(HttpServletResponse response, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
+    public ResponseEntity<String> login(HttpServletResponse resp, @RequestParam(name = "username") String username, @RequestParam(name = "password") String password) throws IOException {
+
         try{
             Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
             SecurityContextHolder.getContext().setAuthentication(auth);
 
             // Save cookie and set auth to securitycontext
-            DoAuthentication(response, username, password);
-            response.sendRedirect("/socialmedia");
+            DoAuthentication(resp, username, password);
+            resp.sendRedirect("/socialmedia");
 
             return ResponseEntity.status(302).header("Location", "/socialmedia").build();
         } catch (AuthenticationException e) {
@@ -58,7 +59,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(HttpServletResponse response,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
+    public ResponseEntity<String> register(HttpServletResponse resp,@RequestParam(name = "username") String username, @RequestParam(name = "email") String email, @RequestParam(name = "password") String password, @RequestParam(name = "confirmPassword") String confirmPassword) throws IOException {
+
         if (!password.equals(confirmPassword)) return ResponseEntity.status(HttpStatus.CONFLICT).body("Passwords are not same");
 
         // Is credentials exist check
@@ -70,27 +72,27 @@ public class AuthController {
         dao.saveUser(user);
 
         // Save cookie and set auth to security context
-        DoAuthentication(response, username, password);
-        response.sendRedirect("/socialmedia");
+        DoAuthentication(resp, username, password);
+        resp.sendRedirect("/socialmedia");
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created");
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> logout(HttpServletResponse resp) throws IOException {
         // Creating empty cookie
         Cookie emptyCookie = new Cookie("JWT",null);
         // Sending empty cookie
-        response.addCookie(emptyCookie);
+        resp.addCookie(emptyCookie);
         emptyCookie.setHttpOnly(true);
         emptyCookie.setSecure(false);
         emptyCookie.setPath("/socialmedia");
         emptyCookie.setMaxAge(0);
         // Sending empty security authentication
-        response.addCookie(emptyCookie);
+        resp.addCookie(emptyCookie);
         SecurityContextHolder.clearContext();
         // Redirecting to login page
-        response.sendRedirect("/socialmedia/login");
+        resp.sendRedirect("/socialmedia/login");
 
         return ResponseEntity.ok().build();
     }
